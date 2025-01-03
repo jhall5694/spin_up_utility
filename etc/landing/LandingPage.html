@@ -1,0 +1,164 @@
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <link href='LandingPage.css' rel='stylesheet' type='text/css'>
+    <title>Welcome to TimeClock Plus!</title>
+    <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+        var blnCanAccessAdm = false;
+        var blnCanAccessApp = false;
+        var blnCanAccessHub = false;
+        var blnCanAccessPwh = false;
+
+        var strAdminAppUrl = "";
+        var strClockHubAppUrl = "";
+        var strClockStatusAppUrl = "";
+        var strManagerAppUrl = "";
+        var strWebClockAppUrl = "";
+        var strWorkstationHubAppUrl = "";
+
+        $(document).ready(function showHideFeatureSection() {
+            $(".featureSection").each(function (intIndex, elFeatureSection) {
+                var jelFeatureSection = $(elFeatureSection);
+                var jelLnkFeature = $(jelFeatureSection.find("a"));
+
+                var setLink = function (strLink) {
+                    jelLnkFeature.attr('href', strLink);
+                    jelFeatureSection.css('display', 'block');
+                }
+
+                if (jelLnkFeature && jelLnkFeature.length === 1) {
+                    if (jelFeatureSection.hasClass("Manager") && blnCanAccessApp) {
+                        setLink(strManagerAppUrl);
+                    }
+                    else if (jelFeatureSection.hasClass("WebClock") && (blnCanAccessApp || blnCanAccessPwh)) {
+                        setLink(strWebClockAppUrl);
+                    }
+                    else if (jelFeatureSection.hasClass("ClockStatus") && blnCanAccessApp) {
+                        setLink(strClockStatusAppUrl);
+                    }
+                    else if (jelFeatureSection.hasClass("Admin") && blnCanAccessAdm) {
+                        setLink(strAdminAppUrl);
+                    }
+                    else if (jelFeatureSection.hasClass("ClockHub") && blnCanAccessHub) {
+                        setLink(strClockHubAppUrl);
+                    }
+                    else if (jelFeatureSection.hasClass("WorkstationHub") && blnCanAccessPwh) {
+                        setLink(strWorkstationHubAppUrl);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="contentWrapper">
+        <div class="textTopMargin">
+            <h1>Welcome to TimeClock Plus
+            </h1>
+        </div>
+        <p class="textBottomMargin">
+            Now that you have installed your new Time and Attendance solution you may be wondering, "What's next?" Have no fear, this landing page will
+        direct you to the important applications.
+        </p>
+        <center>
+        <div class="featureWrapper">
+
+            <div class="featureSection Manager">
+                <div class="featureSubSection">
+                    <h2>
+                        TimeClock Manager
+                    </h2>
+
+                    <p>
+                        TimeClock Manager is where department heads and time keepers will be doing most of their work. Here you will be able to add
+                        new
+                        employees, correct time cards, and print reports.</p>
+                    <a target="_blank"> Go to Manager </a>
+                </div>
+            </div>
+
+            <div class="featureSection Admin">
+                <div class="featureSubSection">
+                    <h2>
+                        Admin Server
+                    </h2>
+
+                    <p>
+                        The Admin Server application allows you to perform administrative functions like updating your software or backing up your
+                        database.
+                    </p>
+                    <a target="_blank"> Go to Admin Server </a>
+                </div>
+            </div>
+
+            <div class="featureSection WorkstationHub">
+                <div class="featureSubSection">
+                    <h2>
+                        Workstation Hub
+                    </h2>
+
+                    <p>
+                        The Workstation Hub application integrates devices such as a desktop fingerprint reader with TimeClock Plus.
+                    </p>
+                    <a target="_blank"> Go to Workstation Hub </a>
+                </div>
+            </div>
+
+            <div class="featureSection WebClock">
+                <div class="featureSubSection">
+                    <h2>
+                        WebClock
+                    </h2>
+
+                    <p>
+                        WebClock offers a complete clock operation and self service solution. Not only will they be able to clock in and out with
+                        this
+                        application, but also view and approve hours, leave balances, and time off requests.
+                    </p>
+                    <a target="_blank"> Go to WebClock </a>
+                </div>
+            </div>
+
+            <div class="featureSection ClockHub">
+                <div class="featureSubSection">
+                    <h2>
+                        Clock Hub
+                    </h2>
+
+                    <p>
+                        The Clock Hub application allows users to quickly create a clock hub and edit clocks using that hub. 
+                        This application provides more detail when viewing or editing clock information. 
+                    </p>
+                    <a target="_blank"> Go to Clock Hub </a>
+                </div>
+            </div>
+            
+            <div class="featureSection ClockStatus">
+                <div class="featureSubSection">
+                    <h2>
+                        Clock Status
+                    </h2>
+
+                    <p>
+                        Clock Status gives IT and 
+                        other users in charge of hardware a company-wide overview of which clocks are running and their location. 
+                        Additionally, terminals that can support multiple companies (such as the RDTg) can be set up here. 
+                    </p>
+                    <a target="_blank"> Go to Clock Status </a>
+                </div>
+            </div>
+        </div>
+    </center>
+    </div>
+    <div class="supportSection">
+        <center>
+        <h2>
+            If you have questions please call our Support Team (325) 223-9300.
+        </h2>
+
+    </center>
+    </div>
+</body>
+</html>

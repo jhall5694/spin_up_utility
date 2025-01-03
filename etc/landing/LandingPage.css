@@ -1,0 +1,102 @@
+
+a {
+    color: #3896d2;
+    cursor: pointer;
+}
+
+body {
+    min-height: 860px;
+    font-family: 'Lato', sans-serif;
+    color: #4d4d4d;
+    margin: 0;
+    padding: 0;
+    width: 570px;
+}
+
+h1, h2, h3 {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+p {
+    margin-bottom: 5px;
+}
+
+li {
+    margin: 5px;
+}
+
+.clearer {
+    clear: both;
+}
+
+.contentWrapper {
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-bottom: 5px;
+    min-height: 600px;
+    margin: 0;
+}
+
+.documentationContent {
+    padding: 5px 0 0 20px;
+}
+
+.featureSection {
+    padding: 15px 5px 5px 5px;
+    box-sizing: border-box;
+    height: 175px;
+    border-top: 2px solid #d3d3d3;
+    border-radius: 3px;
+    text-align: left;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-right: 5px;
+    display: none;
+}
+
+.featureSubSection {
+    margin-bottom: 15px;
+}
+
+.featureSubSection a {
+    bottom: 10px;
+    right: 10px;
+
+}
+
+.featureSubSection h2 {
+    color: #41bb9b;
+}
+
+.logoWrapper {
+    padding-left: 10px;
+}
+
+.supportSection {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #DDD;
+    clear: both;
+    color: #666;
+    height: 65px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    padding-top: 20px;
+    width: 100%;
+}
+
+.supportSection a {
+    padding-right: 5px;
+    float: none !important;
+}
+
+.textBottomMargin {
+    margin-bottom: 20px;
+}
+
+.textTopMargin {
+    margin-top: 5px;
+}
+
