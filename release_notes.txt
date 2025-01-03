@@ -10,9 +10,13 @@
 * add program exit
 
 1.3
+* Actions stored in list
+* Add main program loop
+
+
+1.4
 * TODO - Open log files
 * TODO - open control panel 
-  ** In progress - not working - not opening necessary prompt to allow - 
-* TODO - adding main program loop
+  ** In progress - not working - not opening necessary prompt to allow actions - 
 * TODO - copy config files
 
