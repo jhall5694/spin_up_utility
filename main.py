@@ -204,7 +204,10 @@ class spin_up():
       while valid_selection == False:
         #self.print_running_versions()
         #self.print_version_folder()
-        int_action_choice = int(input("Make a selection --> "))
+        try:
+          int_action_choice = int(input("Make a selection --> "))
+        except: # invalid user input
+          continue
         if int_action_choice >= 0 and int_action_choice <= len(self.list_str_actions):
           valid_selection = True
         else:
