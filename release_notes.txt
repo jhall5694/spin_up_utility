@@ -17,10 +17,12 @@
 1.4
 * fixed wrong folder index
 * added stop step before start action 
+* copy config files
 * TODO - Open log files
 * TODO - open control panel 
   ** In progress - not working - not opening necessary prompt to allow actions - 
-* TODO - copy config files
 * TODO - Download pri repository file
+
+
 
 

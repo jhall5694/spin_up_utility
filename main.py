@@ -4,6 +4,7 @@ import webbrowser
 import datetime
 import sys
 import time
+import shutil
 
 '''  Changes
 * Actions stored in list
@@ -20,10 +21,11 @@ class spin_up():
     self.path_adm_log = 'adm/lib/tcpws-1.0.0/log/'
     self.path_app_log = 'app/lib/tcpws-1.0.0/log/'
     self.path_control_panel = 'adm/etc/controlpanel/Tcp.ControlPanel.exe' 
+    self.path_default_config_files = 'cfg_template' 
     self.list_running_versions = []
     self.list_installed_versions = []
     self.list_folder_names = []
-    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open root folder","TCP control panel","Reset","Exit"]
+    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open root folder","copy config files","TCP control panel","Reset","Exit"]
       
     # start main loop
     #self.create_window()
@@ -70,9 +72,6 @@ class spin_up():
     exit
     #self.window.destroy()
     #self.window.quit()
-  
-    
-  
   
   
   
@@ -167,11 +166,6 @@ class spin_up():
   def thisfunc(self):
     None
     
-    
-    
-    
-    
-    
   # command line utilization until GUI is ready 
   def main(self):
     continue_application = True    
@@ -204,7 +198,7 @@ class spin_up():
       print("\n\n")
       str_action = self.generate_string(self.list_str_actions)
       print(str_action)
-      
+
       # get user action choice
       valid_selection = False
       while valid_selection == False:
@@ -289,16 +283,15 @@ class spin_up():
             case "TCP control panel":
               path_action_version_action = path_action_version_folder + self.path_control_panel
               str_action_description = "open TCP control panel"
-              print(str_action_description)
               path_action_version_action = '"' + path_action_version_action + '"'
-              print(path_action_version_action)
-              os.startfile(path_action_version_action)
-              break
-    
+              
+            case "copy config files":
+              path_action_version_action = path_action_version_folder + self.path_cfg_root
+              str_action_description = "copy config files"
+              
             case default:
               None
               break
-            
           
           # confirm action
           str_action_description = "\nAttempt to %s?"%str_action_description + path_action_version_action
@@ -307,6 +300,19 @@ class spin_up():
           print(str_action)
           str_input = input("Make a selection --> ")
           if str_input != "1" and str_input != "": # user chose to cancel action
+            break
+            
+          if str_action_choice == "copy config files":
+            #print(self.path_root + self.path_cfg_template)
+            #print(path_action_version_action)
+            dest = shutil.copytree(self.path_root + self.path_cfg_template, path_action_version_action, dirs_exist_ok = True)
+            dest = shutil.copy(self.path_root + self.path_cfg_template + "AdmPass.txt", path_action_version_folder + self.path_adm_cfg + "AdmPass.txt")
+            #print(self.path_root + self.path_cfg_template + "AdmPass.txt")
+            #print(path_action_version_folder + self.path_adm_cfg + "AdmPass.txt")
+            #inp = input("press enter to continue")
+            break
+          elif str_action_choice == "TCP control panel":
+            os.startfile(path_action_version_action)
             break
             
           path_action_version_action = '"' + path_action_version_action + '"'
