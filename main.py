@@ -267,7 +267,7 @@ class spin_up():
         else:
           action_version_folder_index = int(input("\nSelect a version folder : \n--> ")) 
         try:
-          str_action_version_folder = self.list_folder_names[action_version_folder_index]
+          str_action_version_folder = self.list_folder_names[action_version_folder_index - 1]
         except:
           print("\ninvalid folder selection - try again\n")
         else:
@@ -275,38 +275,48 @@ class spin_up():
           path_action_version_folder = self.path_root + str_action_version_folder + "/"
           match str_action_choice:
             case "Start":
-              path_action_version_action = path_action_version_folder + self.path_bin_root + "start.bat"
-              str_action_description = "attempting to start : "
+              path_action_version_action = path_action_version_folder + self.path_bin_root + "start.bat"            
+              str_action_description = "start"
               
             case "Stop":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "stop.bat"
-              str_action_description = "attempting to stop : "
+              str_action_description = "stop"
               
             case "Restart":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "restart.bat"
-              str_action_description = "attempting to restart : "
+              str_action_description = "restart"
               
             case "TCP control panel":
               path_action_version_action = path_action_version_folder + self.path_control_panel
-              str_action_description = "attempting to open TCP control panel: "
+              str_action_description = "open TCP control panel"
               print(str_action_description)
               path_action_version_action = '"' + path_action_version_action + '"'
               print(path_action_version_action)
               os.startfile(path_action_version_action)
+              break
     
             case default:
               None
               break
             
-          str_action_description = str_action_description + path_action_version_action
+          
+          # confirm action
+          str_action_description = "\nAttempt to %s?"%str_action_description + path_action_version_action
           print(str_action_description)
+          str_action = self.generate_string(['Yes','Cancel'])
+          print(str_action)
+          str_input = input("Make a selection --> ")
+          if str_input != "1" and str_input != "": # user chose to cancel action
+            break
+            
           path_action_version_action = '"' + path_action_version_action + '"'
           print(path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
     
     
-
+      # confirm action
+      
 
   #  move window -----------------------------------------------------------------
   def start_move(self, event): # move window left click mouse down
