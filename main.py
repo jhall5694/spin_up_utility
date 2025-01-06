@@ -259,9 +259,10 @@ class spin_up():
           else:
             action_version_folder_index = int(action_version_folder_index)
         else:
-          action_version_folder_index = int(input("\nSelect a version folder : \n--> ")) 
+          action_version_folder_index = int(input("\nSelect a version folder : \n--> ")) - 1
         try:
-          str_action_version_folder = self.list_folder_names[action_version_folder_index - 1]
+          str_action_version_folder = self.list_folder_names[action_version_folder_index]
+          print(str_action_version_folder)
         except:
           print("\ninvalid folder selection - try again\n")
         else:
@@ -303,13 +304,8 @@ class spin_up():
             break
             
           if str_action_choice == "copy config files":
-            #print(self.path_root + self.path_cfg_template)
-            #print(path_action_version_action)
             dest = shutil.copytree(self.path_root + self.path_cfg_template, path_action_version_action, dirs_exist_ok = True)
             dest = shutil.copy(self.path_root + self.path_cfg_template + "AdmPass.txt", path_action_version_folder + self.path_adm_cfg + "AdmPass.txt")
-            #print(self.path_root + self.path_cfg_template + "AdmPass.txt")
-            #print(path_action_version_folder + self.path_adm_cfg + "AdmPass.txt")
-            #inp = input("press enter to continue")
             break
           elif str_action_choice == "TCP control panel":
             os.startfile(path_action_version_action)
@@ -319,6 +315,7 @@ class spin_up():
           print(path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
+          str_input = input("Press enter to continue ")
     
     
       # confirm action
