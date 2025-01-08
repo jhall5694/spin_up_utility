@@ -298,7 +298,7 @@ class spin_up():
               break
           
           # confirm action
-          str_action_description = "\nAttempt to %s?"%str_action_description + path_action_version_action
+          str_action_description = "\nAttempt to %s? "%str_action_description + path_action_version_action
           print(str_action_description)
           str_action = self.generate_string(['Yes','Cancel'])
           print(str_action)
@@ -315,7 +315,7 @@ class spin_up():
             break
             
           path_action_version_action = '"' + path_action_version_action + '"'
-          print(path_action_version_action)
+          print("\n Executing : %s"%path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
           str_input = input("Press enter to continue ")
