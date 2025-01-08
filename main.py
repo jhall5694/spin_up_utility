@@ -315,7 +315,7 @@ class spin_up():
             break
             
           path_action_version_action = '"' + path_action_version_action + '"'
-          print("\n Executing : %s"%path_action_version_action)
+          print("\nExecuting : %s"%path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
           str_input = input("Press enter to continue ")
