@@ -45,3 +45,10 @@
 2025-02-03 09:13:54.566764 : exit btn pressed
 2025-02-03 09:13:57.282238 : exit btn pressed
 2025-02-03 09:15:18.283015 : exit btn pressed
+2025-02-03 09:24:19.375624 : exit btn pressed
+2025-02-03 09:24:24.399117 : exit btn pressed
+2025-02-03 16:45:41.635292 : exit btn pressed
+2025-02-03 16:50:38.221905 : exit btn pressed
+2025-02-03 16:53:31.905548 : exit btn pressed
+2025-02-03 16:54:01.667624 : exit btn pressed
+2025-02-03 17:01:25.518944 : exit btn pressed

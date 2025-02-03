@@ -191,7 +191,7 @@ class spin_up():
       #print(self.list_installed_versions)
       
       # user selects an action
-      print("\n\n")
+      print("\n")
       str_action = self.generate_string(self.list_str_actions)
       print(str_action)
 
@@ -281,8 +281,11 @@ class spin_up():
             action_version_folder_index = int(action_version_folder_index) - 1
             print("action_version_folder_index : %s"%action_version_folder_index)
         else:
-          action_version_folder_index = int(input("\nSelect a version folder : \n--> ")) - 1
-          print("action_version_folder_index : %s"%action_version_folder_index)
+          action_version_folder_index = input("\nSelect a version folder (enter c to cancel): \n--> ")
+          if action_version_folder_index == '' or action_version_folder_index == "c":
+            break
+          else: 
+            action_version_folder_index = int(action_version_folder_index) - 1
         try:
           print(self.list_folder_names)
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
@@ -366,9 +369,11 @@ class spin_up():
               break
           
           # confirm action
-          str_action_description = "\nAttempt to %s? "%str_action_description + path_action_version_action
+          self.clear_cmd_window()
+          str_action_description = "\nAttempt to %s?"%str_action_description + path_action_version_action
           print(str_action_description)
-          str_action = self.generate_string(['Yes','Cancel'])
+          print("\n")
+          str_action = self.generate_string(['Yes [Enter]','Cancel'])
           print(str_action)
           str_input = input("Make a selection --> ")
           if str_input != "1" and str_input != "": # user chose to cancel action
@@ -386,6 +391,7 @@ class spin_up():
             break            
             
           path_action_version_action = '"' + path_action_version_action + '"'
+          self.clear_cmd_window()
           print("\nExecuting : %s"%path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
