@@ -163,10 +163,16 @@ class spin_up():
   def clear_cmd_window(self):
     os.system('cls')
     
-    
   def thisfunc(self):
     None
     
+  def print_folder_names(self):
+    # print list of folder names
+    self.list_folder_names = self.get_list_installed_versions()[1]
+    print("\nfolder names")
+    str_print = self.generate_string(self.list_folder_names)
+    print(str_print)
+      
   # command line utilization until GUI is ready 
   def main(self):
     continue_application = True    
@@ -183,17 +189,6 @@ class spin_up():
       #self.list_installed_versions = self.get_list_installed_versions()[0]
       #print("\ninstalled versions")
       #print(self.list_installed_versions)
-      
-      # print list of folder names
-      self.list_folder_names = self.get_list_installed_versions()[1]
-      print("\nfolder names")
-      #print(self.list_folder_names)
-      str_print = ""
-      str_print = self.generate_string(self.list_folder_names)
-      #for i in range(len(self.list_folder_names)):
-      #  curr_folder_name = self.list_folder_names[i]
-      #  str_print = str_print + "\n" + str(i) + ") " + curr_folder_name
-      print(str_print)
       
       # user selects an action
       print("\n\n")
@@ -233,6 +228,7 @@ class spin_up():
           print(str_action_choice)
     
       # perform non version specific actions
+      self.clear_cmd_window()
       ask_for_version_folder = False 
       match str_action_choice: 
         case "Open Admin portal":
@@ -260,9 +256,16 @@ class spin_up():
         case default:
           ask_for_version_folder = True
       
+      print("action selected : %s"%str_action_choice)
+      
       # user selects a folder and action is attempted    
       valid_selection = False
       while valid_selection == False and ask_for_version_folder == True:
+        # print list of folder names
+        self.clear_cmd_window()
+        self.print_folder_names()
+        print("action selected : %s"%str_action_choice)
+        
         if len(self.list_running_versions) > 0:
           action_version_folder_index = input("\nSelect a version folder (press enter for current [%s])(enter c to cancel): \n--> "%self.list_running_versions[0])
           if action_version_folder_index == "": # user pressed enter to select current running version
