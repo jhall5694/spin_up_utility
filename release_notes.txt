@@ -18,10 +18,11 @@
 * fixed wrong folder index
 * added stop step before start action 
 * copy config files
-* TODO - Open log files
+* Open log file folders
 * TODO - open control panel 
   ** In progress - not working - not opening necessary prompt to allow actions - 
 * TODO - Download pri repository file
+* TODO - Check that each TCP service is running
 
 
 

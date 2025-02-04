@@ -81,18 +81,20 @@ class spin_up():
   # determine what version if any is already running
   def get_list_running_versions(self):
     local_list_running_versions = []
+    local_list_running_services = []
     for service in psutil.win_service_iter():
       curr_service_name = service.name()
       #print(curr_service_name)
       if curr_service_name.find("TimeClockPlus") > -1:
         curr_version = self.get_version_from_service_string(curr_service_name)
+        local_list_running_services.append(curr_service_name)
         if curr_version != "":
           # add running version string to list of running versions (if not already present)
           if not curr_version in local_list_running_versions:
             local_list_running_versions.append(curr_version)
             #print(curr_version)
             
-    return local_list_running_versions
+    return [local_list_running_versions,local_list_running_services]
 
   # get TCP version from service name string
   def get_version_from_service_string(self,str_name):
@@ -106,7 +108,8 @@ class spin_up():
         return_val = str_version
         
     return return_val
-  
+    
+    
   # get list of TCP version folder names
   def get_list_installed_versions(self):
     local_list_folder_names = []
@@ -181,9 +184,15 @@ class spin_up():
       self.clear_cmd_window()
       
       # print list of running versions
-      self.list_running_versions = self.get_list_running_versions()
+      list_running_versions_and_services = self.get_list_running_versions()
+      self.list_running_versions = list_running_versions_and_services[0]
+      self.list_running_services = list_running_versions_and_services[1]
       print("\nrunning versions")
       print(self.list_running_versions)
+      print("\nrunning services")
+      str_print = self.generate_string(self.list_running_services)
+      print(str_print)
+      
       
       # print list of installed versions
       #self.list_installed_versions = self.get_list_installed_versions()[0]
