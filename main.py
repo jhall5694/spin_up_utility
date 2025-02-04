@@ -395,7 +395,7 @@ class spin_up():
           print("\nExecuting : %s"%path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
-          str_input = input("Press enter to continue ")
+          str_input = input("\nPress enter to continue --> ")
     
     
       # confirm action
