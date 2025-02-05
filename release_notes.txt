@@ -19,10 +19,18 @@
 * added stop step before start action 
 * copy config files
 * Open log file folders
+* Check that each TCP service is running
+* TODO - Download pri repository file
+  ** In progress - not working - seems to need AWS S3 Key and Secret, but not sure...
+* TODO - open yaml files
+* TODO - yaml options
+  ** e.g. autoimport, WSH, etc
 * TODO - open control panel 
   ** In progress - not working - not opening necessary prompt to allow actions - 
-* TODO - Download pri repository file
-* TODO - Check that each TCP service is running
+* TODO - open auto import folder
+
+
+
 
 
 

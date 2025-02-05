@@ -5,6 +5,7 @@ import datetime
 import sys
 import time
 import shutil
+import boto3 # AWS access
 
 '''  Changes
 * Actions stored in list
@@ -25,8 +26,9 @@ class spin_up():
     self.list_running_versions = []
     self.list_installed_versions = []
     self.list_folder_names = []
-    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open root folder","Open log file","Copy config files","TCP control panel","Reset","Exit"]
+    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open root folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset","Exit"]
     self.list_str_log_folders = ["adm","app"]
+    self.list_yes_no = ["yes(enter)","no"]
       
     # start main loop
     #self.create_window()
@@ -110,6 +112,16 @@ class spin_up():
     return return_val
     
     
+  # get TCP versions available for download
+  def list_available_downloads(self):
+    repo_path = "http://pri.tcplusondemand.com.s3-website-us-east-1.amazonaws.com/core/qa/"
+    print(repo_path)
+    for root, dirs, files in os.walk(repo_path):
+      print("here")
+      for file in files:
+        print(os.path.join(root, file))    
+
+    
   # get list of TCP version folder names
   def get_list_installed_versions(self):
     local_list_folder_names = []
@@ -145,7 +157,43 @@ class spin_up():
       str_version = str_name[0:end_index]
       
     return str_version
-                    
+     
+  # download a file from pri.tcplusondemand.com/core/qa    
+  def download_file(self):
+    cl = True
+    while cl == True:
+      str_file_to_download = input("enter filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
+      if str_file_to_download == "":
+        continue
+      if str_file_to_download == "c":
+        return
+
+      try:
+        client = boto3.client(
+            's3',
+            aws_access_key_id='AKIAWPJDIGEAFHFWVZVM',
+            aws_secret_access_key='10o20Ekrgf19LoKP3yWw3kxpes3ae7i0ulu5'
+        )
+        s3 = boto3.resource('s3')
+      except:
+        print("not able to connect to AWS S3 - Check credentials")
+      else:
+        try:
+          s3.Bucket('pri.tcplusondemand.com').download_file(str_file_to_download, str_file_to_download)
+        except:
+          print("problem downloading the file - exact filename match required")   
+          #raise
+        else:
+          print("file successfully downloaded")
+      print("attempt another download?")
+      str_action = self.generate_string(self.list_yes_no)
+      cl = input(str_action)
+      if cl != "" and cl != "1":
+        break
+      else:
+        cl = True
+        self.clear_cmd_window()
+    
   # generate string for user input
   def generate_string(self, list_data):
     index = 1
@@ -192,6 +240,10 @@ class spin_up():
       print("\nrunning services")
       str_print = self.generate_string(self.list_running_services)
       print(str_print)
+      
+      # feature not working yet - seems to need AWS S3 Key and Secret, but not sure...
+      #print("\navailable downloads")
+      #self.list_available_downloads()
       
       
       # print list of installed versions
@@ -254,8 +306,11 @@ class spin_up():
           os.system("start explorer.exe %s"%path_action_version_action)
           time.sleep(3)       
           
+        case "Download file from QA S3":
+          str_action_description = "attempting to download file: "
+          self.download_file()
+          
         case "Reset":
-          print("here") 
           str_action_description = "resetting application: "
           
         case "Exit":
@@ -296,7 +351,7 @@ class spin_up():
           else: 
             action_version_folder_index = int(action_version_folder_index) - 1
         try:
-          print(self.list_folder_names)
+          #print(self.list_folder_names)
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
           print("version selected : %s"%str_action_version_folder)
         except:
@@ -329,6 +384,7 @@ class spin_up():
             case "Open log file":
               #input_log_src = input("
               str_action = self.generate_string(self.list_str_log_folders)
+              print("\n")
               print(str_action)
               
               # get user action choice
@@ -404,7 +460,7 @@ class spin_up():
           print("\nExecuting : %s"%path_action_version_action)
           #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
-          str_input = input("\nPress enter to continue --> ")
+          #str_input = input("\nPress enter to continue --> ")
     
     
       # confirm action
