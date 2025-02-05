@@ -15,6 +15,7 @@ import boto3 # AWS access
 class spin_up():
   def __init__(self):
     self.path_root = 'C:/Program Files (x86)/TimeClock Plus 7.0/'
+    self.path_downloads = 'Downloads'
     self.path_cfg_root = 'cfg/'
     self.path_adm_cfg = 'adm/lib/tcpws-1.0.0/cfg/'
     self.path_bin_root = 'bin/'
@@ -162,11 +163,23 @@ class spin_up():
   def download_file(self):
     cl = True
     while cl == True:
-      str_file_to_download = input("enter filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
+      print("select method to specify file")
+      print(self.generate_string(["version number","full filename"]))
+      str_action_choice = input("Make a selection --> ")
+      if str_action_choice == "2":
+        str_file_to_download = input("enter the full filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
+      else:
+        str_version = input("version to download (press c to cancel) --> ")
+        if str_version == "":
+          continue
+        if str_version == "c":
+          return
+        str_file_to_download = "tcp.core-" + str_version + ".zip"
       if str_file_to_download == "":
         continue
       if str_file_to_download == "c":
         return
+      print("attempting to download : pri.tcplusondemand.com/core/qa/" + str_file_to_download)
 
       try:
         client = boto3.client(
@@ -186,9 +199,9 @@ class spin_up():
         else:
           print("file successfully downloaded")
       print("attempt another download?")
-      str_action = self.generate_string(self.list_yes_no)
-      cl = input(str_action)
-      if cl != "" and cl != "1":
+      print(self.generate_string(self.list_yes_no))
+      str_action_choice = input("Make a selection --> ")
+      if str_action_choice != "" and str_action_choice != "1":
         break
       else:
         cl = True
@@ -310,6 +323,12 @@ class spin_up():
           str_action_description = "attempting to download file: "
           self.download_file()
           
+        case "Open downloads folder":
+          str_action_description = "attempting to open downloads folder: "
+          path_action_version_action = '"' + self.path_downloads.replace("/","\\") + '"'
+          os.system("start explorer.exe %s"%path_action_version_action)
+          time.sleep(3)
+
         case "Reset":
           str_action_description = "resetting application: "
           
