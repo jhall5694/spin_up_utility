@@ -27,7 +27,7 @@ class spin_up():
     self.list_running_versions = []
     self.list_installed_versions = []
     self.list_folder_names = []
-    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open root folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset","Exit"]
+    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open TCP root folder","Open version folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset","Exit"]
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
       
@@ -179,8 +179,14 @@ class spin_up():
         continue
       if str_file_to_download == "c":
         return
+      str_file_to_download = "pri.tcplusondemand.com/core/qa/" + str_file_to_download
       print("attempting to download : pri.tcplusondemand.com/core/qa/" + str_file_to_download)
-
+      
+      # open link in browser - temporary solution until consistent aws s3 functionality is obtained
+      webbrowser.open('http://%s'%str_file_to_download)
+      
+      # method utilizing aws s3 needs more research to be consistent
+      '''
       try:
         client = boto3.client(
             's3',
@@ -206,7 +212,7 @@ class spin_up():
       else:
         cl = True
         self.clear_cmd_window()
-    
+      '''    
   # generate string for user input
   def generate_string(self, list_data):
     index = 1
@@ -310,14 +316,11 @@ class spin_up():
           webbrowser.open('http://%s:9443/app/admin/#/AdminLogOn'%computer_name)
           time.sleep(3)
           
-        case "Open root folder":
-          str_action_description = "attempting to open root folder: "
-          #path_action_version_action = '"' + self.path_root + '"'
+        case "Open TCP root folder":
+          str_action_description = "attempting to open TCP root folder: "
           path_action_version_action = '"' + self.path_root.replace("/","\\") + '"'
-          #print(path_action_version_action)
-          #os.system("start cmd /c %s"%path_action_version_action)      
           os.system("start explorer.exe %s"%path_action_version_action)
-          time.sleep(3)       
+          time.sleep(3)            
           
         case "Download file from QA S3":
           str_action_description = "attempting to download file: "
@@ -390,7 +393,7 @@ class spin_up():
             case "Restart":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "restart.bat"
               str_action_description = "restart"
-              
+          
             case "TCP control panel":
               path_action_version_action = path_action_version_folder + self.path_control_panel
               str_action_description = "open TCP control panel"
@@ -399,6 +402,11 @@ class spin_up():
             case "Copy config files":
               path_action_version_action = path_action_version_folder + self.path_cfg_root
               str_action_description = "Copy config files"
+              
+            case "Open version folder":
+              str_action_description = "open version folder: "
+              path_action_version_action = '"' + path_action_version_folder.replace("/","\\") + '"'
+              #os.system("start explorer.exe %s"%path_action_version_action)
               
             case "Open log file":
               #input_log_src = input("
@@ -472,6 +480,8 @@ class spin_up():
             break
           elif str_action_choice == "Open log file":
             os.startfile(path_action_version_action)
+          elif str_action_choice == "Open version folder":  
+            os.system("start explorer.exe %s"%path_action_version_action)
             break            
             
           path_action_version_action = '"' + path_action_version_action + '"'
