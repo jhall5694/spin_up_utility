@@ -204,6 +204,7 @@ class spin_up():
           #raise
         else:
           print("file successfully downloaded")
+      '''
       print("attempt another download?")
       print(self.generate_string(self.list_yes_no))
       str_action_choice = input("Make a selection --> ")
@@ -212,7 +213,7 @@ class spin_up():
       else:
         cl = True
         self.clear_cmd_window()
-      '''    
+          
   # generate string for user input
   def generate_string(self, list_data):
     index = 1
@@ -222,6 +223,7 @@ class spin_up():
       index += 1
     return str_new
       
+  
   # open log files
   def open_log_file(type):
     None
@@ -349,29 +351,33 @@ class spin_up():
       while valid_selection == False and ask_for_version_folder == True:
         # print list of folder names
         self.clear_cmd_window()
-        self.print_folder_names()
         print("action selected : %s"%str_action_choice)
         
-        if len(self.list_running_versions) > 0:
-          action_version_folder_index = input("\nSelect a version folder (press enter for current [%s])(enter c to cancel): \n--> "%self.list_running_versions[0])
-          if action_version_folder_index == "": # user pressed enter to select current running version
-            # get index of current running version in list_folder_names
-            try:
-              action_version_folder_index = self.list_folder_names.index(self.list_running_versions[0])
-            except:
-              # return an invalid index so user can try again
-              action_version_folder_index = len(self.list_folder_names) + 999
-          elif action_version_folder_index == "c":
-            break
-          else:
-            action_version_folder_index = int(action_version_folder_index) - 1
-            print("action_version_folder_index : %s"%action_version_folder_index)
-        else:
+        str_to_present = "\nEnter the version number, e.g., 7.1.56.1 or 56.1 (enter = current version[%s])(c = cancel)(l = list available): \n--> "%self.list_running_versions[0]
+        if len(self.list_running_versions) <= 0:
+          str_to_present = str_to_present + "(enter = current version[%s])"
+        print(str_to_present)
+        version_selection_type = input("make a selection --> ")
+
+        if version_selection_type == "": # user pressed enter to select current running version
+          # get index of current running version in list_folder_names
+          try:
+            action_version_folder_index = self.list_folder_names.index(self.list_running_versions[0])
+          except:
+            # return an invalid index so user can try again
+            action_version_folder_index = len(self.list_folder_names) + 999
+        elif version_selection_type == "c":
+          break
+        elif version_selection_type == "l":
+          self.print_folder_names()
           action_version_folder_index = input("\nSelect a version folder (enter c to cancel): \n--> ")
           if action_version_folder_index == '' or action_version_folder_index == "c":
             break
           else: 
             action_version_folder_index = int(action_version_folder_index) - 1
+        else:
+          None
+          # User typed a number - find the correct version folder index
         try:
           #print(self.list_folder_names)
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
