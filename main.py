@@ -26,6 +26,8 @@ class spin_up():
     self.path_default_config_files = 'cfg_template' 
     self.list_running_versions = []
     self.list_installed_versions = []
+    self.latest_rc_build = 0
+    self.latest_drc_build = 0
     self.list_folder_names = []
     self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open TCP root folder","Open version folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset (enter)","Exit"]
     self.list_str_log_folders = ["adm","app"]
@@ -134,36 +136,50 @@ class spin_up():
     for item in os.scandir(self.path_root):
       if item.is_dir() == True:
         curr_folder_name = item.name
-        curr_folder_version = self.get_version_from_folder_string(curr_folder_name)
-        if curr_folder_version != "":
-          if not curr_folder_version in local_list_installed_versions:
-            local_list_installed_versions.append(curr_folder_version)
+        num_decimals = curr_folder_name.count(".") - 1
+        if num_decimals < 3: # not a version folder
+          continue
+        list_temp = self.get_version_and_breakout_from_folder_string(curr_folder_name)
+        curr_folder_version_full = list_temp[0]
+        curr_folder_major = int(list_temp[1])
+        curr_folder_minor = int(list_temp[2])
+        curr_folder_build = int(list_temp[3])
+        curr_folder_revision = int(list_temp[4])
+        
+        if curr_folder_version_full != "":
+          if not curr_folder_version_full in local_list_installed_versions:
+            local_list_installed_versions.append(curr_folder_version_full)
             local_list_folder_names.append(curr_folder_name)
-    print("herio")
-    print(local_list_folder_names)
+          if curr_folder_revision > 9: # RC
+            if curr_folder_build > self.latest_rc_build:
+              self.latest_rc_build = curr_folder_build           
+          else: # DRC
+            if curr_folder_build > self.latest_drc_build:
+              self.latest_drc_build = curr_folder_build
+
     return [local_list_installed_versions, local_list_folder_names]
     
   # get TCP version from folder name string
-  def get_version_from_folder_string(self,str_name):
+  def get_version_and_breakout_from_folder_string(self,str_name):
     #print(str_name)
     #print(len(str_name))
-    str_version = ""
+    str_version_full = ""
+    
     end_index = len(str_name)
     num_decimals = 0
     for str_char_index in range(len(str_name)):
-      #print(str_char_index)
       curr_char = str_name[str_char_index]
-      #print(curr_char)
       if curr_char == ".":
-        #print("here")
         num_decimals = num_decimals + 1
         if num_decimals == 4:
           end_index = str_char_index
           break
     if num_decimals > 2:
-      str_version = str_name[0:end_index]
+      str_version_full = str_name[0:end_index]
       
-    return str_version
+    list_temp = str_version_full.split('.')  
+    
+    return [str_version_full,list_temp[0],list_temp[1],list_temp[2],list_temp[3]]
      
   # download a file from pri.tcplusondemand.com/core/qa    
   def download_file(self):
@@ -230,8 +246,34 @@ class spin_up():
     return str_new
     
   # user entered version number string - find version index
-  def find_version_index(self):
-    None
+  def build_version_str_from_user_input(self,str_var):
+    str_full_version = ""
+    
+    if not str_var.isnumeric():
+      return ""
+      
+    list_temp = str_var.split(".") # split full user input by decimal, e.g. "7.1.57.132" -> ["7","1","57","132"]
+    list_version_split = ["","","",""]
+    
+    # determine if user entered DRC or RC version number
+    len_revision_str = len(list_temp[len(list_temp) - 1])
+    user_entered_rc = False
+    
+    if len(list_temp) < 4:
+      list_version_split[0] = "7"
+    if len(list_temp) < 3:
+      list_version_split[1] = "1"
+    if len(list_temp) < 2:
+      if len_revision_str == 1:
+        list_version_split[2] = str(self.latest_rc_build)
+      else:
+        list_version_split[2] = str(self.latest_drc_build)
+    list_version_split[3] = list_temp[len(list_temp) - 1]
+    
+    separator = "."
+    str_full_version = separator.join(list_version_split)
+    print("str_full_version: %s"%str_full_version)
+    self.pause()
     
   # open log files
   def open_log_file(type):
@@ -368,8 +410,7 @@ class spin_up():
         if len(self.list_running_versions) > 0:
           str_to_present = str_to_present + "(enter = current version[%s])"%self.list_running_versions[0]
         str_to_present = str_to_present + ": --> "
-        print(str_to_present)
-        version_selection_type = input("make a selection --> ")
+        version_selection_type = input(str_to_present)
 
         if version_selection_type == "": # user pressed enter to select current running version
           if len(self.list_running_versions) >= 0:
@@ -391,7 +432,7 @@ class spin_up():
           else: 
             action_version_folder_index = int(action_version_folder_index) - 1
         else: # User typed a number - find the correct version folder index
-          self.find_version_index()
+          self.build_version_str_from_user_input(version_selection_type)
           
         try:
           print("action_version_folder_index : ",action_version_folder_index)
