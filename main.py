@@ -27,7 +27,7 @@ class spin_up():
     self.list_running_versions = []
     self.list_installed_versions = []
     self.list_folder_names = []
-    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open TCP root folder","Open version folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset","Exit"]
+    self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open TCP root folder","Open version folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset (enter)","Exit"]
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
       
@@ -139,6 +139,8 @@ class spin_up():
           if not curr_folder_version in local_list_installed_versions:
             local_list_installed_versions.append(curr_folder_version)
             local_list_folder_names.append(curr_folder_name)
+    print("herio")
+    print(local_list_folder_names)
     return [local_list_installed_versions, local_list_folder_names]
     
   # get TCP version from folder name string
@@ -226,8 +228,11 @@ class spin_up():
       str_new = str_new + "%s) %s\n"%(index,str_curr)
       index += 1
     return str_new
-      
-  
+    
+  # user entered version number string - find version index
+  def find_version_index(self):
+    None
+    
   # open log files
   def open_log_file(type):
     None
@@ -242,9 +247,11 @@ class spin_up():
   def thisfunc(self):
     None
     
+  def load_folder_names(self):
+    self.list_folder_names = self.get_list_installed_versions()[1]
+    
   def print_folder_names(self):
     # print list of folder names
-    self.list_folder_names = self.get_list_installed_versions()[1]
     print("\nfolder names")
     str_print = self.generate_string(self.list_folder_names)
     print(str_print)
@@ -272,7 +279,6 @@ class spin_up():
       
       
       # print list of installed versions
-      #self.list_installed_versions = self.get_list_installed_versions()[0]
       #print("\ninstalled versions")
       #print(self.list_installed_versions)
       
@@ -308,7 +314,7 @@ class spin_up():
             
           # get string value of choice
           if int_action_choice == 0:
-            str_action_choice = "Reset"
+            str_action_choice = "Reset (enter)"
           else:
             str_action_choice = self.list_str_actions[int_action_choice - 1]
           print(str_action_choice)
@@ -338,7 +344,7 @@ class spin_up():
           os.system("start explorer.exe %s"%path_action_version_action)
           time.sleep(3)
 
-        case "Reset":
+        case "Reset (enter)":
           str_action_description = "resetting application: "
           
         case "Exit":
@@ -355,9 +361,10 @@ class spin_up():
       while valid_selection == False and ask_for_version_folder == True:
         # print list of folder names
         self.clear_cmd_window()
+        self.load_folder_names()
         print("action selected : %s"%str_action_choice)
         
-        str_to_present = "\nEnter the version number, e.g., 7.1.56.1 or 56.1 (c = cancel)(l = list available)"
+        str_to_present = "\nEnter the full or partial version number(c = cancel)(l = list available)"
         if len(self.list_running_versions) > 0:
           str_to_present = str_to_present + "(enter = current version[%s])"%self.list_running_versions[0]
         str_to_present = str_to_present + ": --> "
@@ -383,11 +390,11 @@ class spin_up():
             break
           else: 
             action_version_folder_index = int(action_version_folder_index) - 1
-        else:
-          None
-          # User typed a number - find the correct version folder index
+        else: # User typed a number - find the correct version folder index
+          self.find_version_index()
+          
         try:
-          #print(self.list_folder_names)
+          print("action_version_folder_index : ",action_version_folder_index)
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
           print("version selected : %s"%str_action_version_folder)
         except:
@@ -453,7 +460,7 @@ class spin_up():
                     
                   # get string value of choice
                   if int_action_choice == 0:
-                    str_action_choice = "Reset"
+                    str_action_choice = "Reset (enter)"
                   else:
                     str_action_choice_temp = self.list_str_log_folders[int_action_choice - 1]
                   print(str_action_choice)
