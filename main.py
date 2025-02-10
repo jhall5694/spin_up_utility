@@ -74,7 +74,11 @@ class spin_up():
     self.file_write.close()
     sys.exit()
     exit
-    #self.window.destroy()
+
+  def pause(self):
+    cl = input("press enter to continue -- >")    
+
+ #self.window.destroy()
     #self.window.quit()
   
   
@@ -353,19 +357,23 @@ class spin_up():
         self.clear_cmd_window()
         print("action selected : %s"%str_action_choice)
         
-        str_to_present = "\nEnter the version number, e.g., 7.1.56.1 or 56.1 (enter = current version[%s])(c = cancel)(l = list available): \n--> "%self.list_running_versions[0]
-        if len(self.list_running_versions) <= 0:
-          str_to_present = str_to_present + "(enter = current version[%s])"
+        str_to_present = "\nEnter the version number, e.g., 7.1.56.1 or 56.1 (c = cancel)(l = list available)"
+        if len(self.list_running_versions) > 0:
+          str_to_present = str_to_present + "(enter = current version[%s])"%self.list_running_versions[0]
+        str_to_present = str_to_present + ": --> "
         print(str_to_present)
         version_selection_type = input("make a selection --> ")
 
         if version_selection_type == "": # user pressed enter to select current running version
-          # get index of current running version in list_folder_names
-          try:
-            action_version_folder_index = self.list_folder_names.index(self.list_running_versions[0])
-          except:
-            # return an invalid index so user can try again
-            action_version_folder_index = len(self.list_folder_names) + 999
+          if len(self.list_running_versions) >= 0:
+            # get index of current running version in list_folder_names
+            try:
+              action_version_folder_index = self.list_folder_names.index(self.list_running_versions[0])
+            except:
+              # return an invalid index so user can try again
+              action_version_folder_index = len(self.list_folder_names) + 999
+          else: # no running version
+            None
         elif version_selection_type == "c":
           break
         elif version_selection_type == "l":
