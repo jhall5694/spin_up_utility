@@ -77,8 +77,8 @@ class spin_up():
     sys.exit()
     exit
 
-  def pause(self):
-    cl = input("press enter to continue -- >")    
+  def pause(self, str_var):
+    cl = input("%s : press enter to continue --> "%str_var)    
 
  #self.window.destroy()
     #self.window.quit()
@@ -129,17 +129,18 @@ class spin_up():
         print(os.path.join(root, file))    
 
     
-  # get list of TCP version folder names
+  # get list of TCP version folder names - also keep track of latest rc and drc build numbers
   def get_list_installed_versions(self):
     local_list_folder_names = []
     local_list_installed_versions = []
     for item in os.scandir(self.path_root):
       if item.is_dir() == True:
         curr_folder_name = item.name
-        num_decimals = curr_folder_name.count(".") - 1
+        num_decimals = curr_folder_name.count(".")
         if num_decimals < 3: # not a version folder
           continue
         list_temp = self.get_version_and_breakout_from_folder_string(curr_folder_name)
+        #print(list_temp)
         curr_folder_version_full = list_temp[0]
         curr_folder_major = int(list_temp[1])
         curr_folder_minor = int(list_temp[2])
@@ -150,7 +151,7 @@ class spin_up():
           if not curr_folder_version_full in local_list_installed_versions:
             local_list_installed_versions.append(curr_folder_version_full)
             local_list_folder_names.append(curr_folder_name)
-          if curr_folder_revision > 9: # RC
+          if curr_folder_revision < 10: # RC
             if curr_folder_build > self.latest_rc_build:
               self.latest_rc_build = curr_folder_build           
           else: # DRC
@@ -245,35 +246,58 @@ class spin_up():
       index += 1
     return str_new
     
-  # user entered version number string - find version index
+  def get_folder_index_from_version_string(self,str_var):
+    try:
+      action_version_folder_index = self.list_folder_names.index(str_var)
+    except:
+      action_version_folder_index = len(self.list_folder_names) + 999
+    return action_version_folder_index
+    
+  # user entered version number string - generate full version string
   def build_version_str_from_user_input(self,str_var):
     str_full_version = ""
     
-    if not str_var.isnumeric():
-      return ""
-      
-    list_temp = str_var.split(".") # split full user input by decimal, e.g. "7.1.57.132" -> ["7","1","57","132"]
+    for char in str_var: # verify user entered valid input
+      match char:
+        case "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"0"|".":
+          None
+        case default: # invalid input
+          return ""
+    
+    list_temp = str_var.split(".") # create list by splitting full user input by decimal, e.g. "7.1.57.132" -> ["7","1","57","132"], e.g. "56.1" -> ["56","1"]
     list_version_split = ["","","",""]
     
     # determine if user entered DRC or RC version number
     len_revision_str = len(list_temp[len(list_temp) - 1])
-    user_entered_rc = False
     
-    if len(list_temp) < 4:
-      list_version_split[0] = "7"
-    if len(list_temp) < 3:
-      list_version_split[1] = "1"
-    if len(list_temp) < 2:
-      if len_revision_str == 1:
-        list_version_split[2] = str(self.latest_rc_build)
-      else:
-        list_version_split[2] = str(self.latest_drc_build)
-    list_version_split[3] = list_temp[len(list_temp) - 1]
+    # set defaults
+    list_version_split[0] = "7" # major
+    list_version_split[1] = "1" # minor
+    if len_revision_str == 1: # build
+      list_version_split[2] = str(self.latest_rc_build)
+    else:
+      list_version_split[2] = str(self.latest_drc_build)    
+    
+    # major
+    if len(list_temp) > 3:
+      list_version_split[0] = list_temp[len(list_temp) - 4] 
+
+     # minor
+    if len(list_temp) > 2:
+      list_version_split[1] = list_temp[len(list_temp) - 3]
+
+    # build  
+    if len(list_temp) > 1:
+      list_version_split[2] = list_temp[len(list_temp) - 2]
+      
+    # revision
+    if len(list_temp) > 0:
+      list_version_split[3] = list_temp[len(list_temp) - 1]
     
     separator = "."
     str_full_version = separator.join(list_version_split)
-    print("str_full_version: %s"%str_full_version)
-    self.pause()
+    #print("str_full_version: %s"%str_full_version)
+    return str_full_version
     
   # open log files
   def open_log_file(type):
@@ -415,13 +439,7 @@ class spin_up():
         if version_selection_type == "": # user pressed enter to select current running version
           if len(self.list_running_versions) >= 0:
             # get index of current running version in list_folder_names
-            try:
-              action_version_folder_index = self.list_folder_names.index(self.list_running_versions[0])
-            except:
-              # return an invalid index so user can try again
-              action_version_folder_index = len(self.list_folder_names) + 999
-          else: # no running version
-            None
+            action_version_folder_index = self.get_folder_index_from_version_string(self.list_running_versions[0])
         elif version_selection_type == "c":
           break
         elif version_selection_type == "l":
@@ -432,14 +450,13 @@ class spin_up():
           else: 
             action_version_folder_index = int(action_version_folder_index) - 1
         else: # User typed a number - find the correct version folder index
-          self.build_version_str_from_user_input(version_selection_type)
-          
+          str_version_full = self.build_version_str_from_user_input(version_selection_type)
+          action_version_folder_index = self.get_folder_index_from_version_string(str_version_full)
         try:
-          print("action_version_folder_index : ",action_version_folder_index)
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
           print("version selected : %s"%str_action_version_folder)
         except:
-          print("\ninvalid folder selection - try again\n")
+          self.pause("\ninvalid folder selection")
         else:
           valid_selection = True
           path_action_version_folder = self.path_root + str_action_version_folder + "/"
@@ -497,7 +514,7 @@ class spin_up():
                   elif int_action_choice >= 0 and int_action_choice <= len(self.list_str_log_folders):
                     valid_selection = True
                   else:
-                    print("\ninvalid selection - try again\n")
+                    self.pause("invalid selection")
                     
                   # get string value of choice
                   if int_action_choice == 0:
