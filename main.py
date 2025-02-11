@@ -192,18 +192,24 @@ class spin_up():
       if str_action_choice == "2":
         str_file_to_download = input("enter the full filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
       else:
-        str_version = input("version to download (press c to cancel) --> ")
-        if str_version == "":
+        str_to_present = "\nEnter the full or partial version number(c = cancel)"
+        version_selection_type = input(str_to_present)
+        if version_selection_type == "":
           continue
-        if str_version == "c":
-          return
-        str_file_to_download = "tcp.core-" + str_version + ".zip"
-      if str_file_to_download == "":
+        if version_selection_type == "c":
+          return        
+        str_version = self.build_version_str_from_user_input(version_selection_type)
+      if str_version == "":
         continue
-      if str_file_to_download == "c":
+      if str_version == "c":
         return
+      str_file_to_download = "tcp.core-" + str_version + ".zip"
       str_file_to_download = "pri.tcplusondemand.com/core/qa/" + str_file_to_download
-      print("attempting to download : pri.tcplusondemand.com/core/qa/" + str_file_to_download)
+      
+      str_action_choice = input("attempt to download %s? (c = cancel)"%str_file_to_download)
+      if str_action_choice == "c":
+        return
+      print("attempting to download : %s"%str_file_to_download)
       
       # open link in browser - temporary solution until consistent aws s3 functionality is obtained
       webbrowser.open('http://%s'%str_file_to_download)
@@ -265,6 +271,7 @@ class spin_up():
           return ""
     
     list_temp = str_var.split(".") # create list by splitting full user input by decimal, e.g. "7.1.57.132" -> ["7","1","57","132"], e.g. "56.1" -> ["56","1"]
+    #print(list_temp)
     list_version_split = ["","","",""]
     
     # determine if user entered DRC or RC version number
@@ -294,6 +301,7 @@ class spin_up():
     if len(list_temp) > 0:
       list_version_split[3] = list_temp[len(list_temp) - 1]
     
+    #print(list_version_split)
     separator = "."
     str_full_version = separator.join(list_version_split)
     #print("str_full_version: %s"%str_full_version)

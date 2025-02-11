@@ -20,8 +20,11 @@
 * copy config files
 * Open log file folders
 * Check that each TCP service is running
+* select by typing version 021025
 * TODO - Download pri repository file
   ** In progress - not working - seems to need AWS S3 Key and Secret, but not sure...
+  ** may want to look into parsing dom on pri website
+  ** TODO - extract and move to TCP folder
 * TODO - open yaml files
 * TODO - yaml options
   ** e.g. autoimport, WSH, etc
