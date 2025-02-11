@@ -21,6 +21,7 @@
 * Open log file folders
 * Check that each TCP service is running
 * select by typing version 021025
+  ** also brought functionality to download interface 021125
 * TODO - Download pri repository file
   ** In progress - not working - seems to need AWS S3 Key and Secret, but not sure...
   ** may want to look into parsing dom on pri website
