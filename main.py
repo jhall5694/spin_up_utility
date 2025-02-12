@@ -459,10 +459,19 @@ class spin_up():
             action_version_folder_index = int(action_version_folder_index) - 1
         else: # User typed a number - find the correct version folder index
           str_version_full = self.build_version_str_from_user_input(version_selection_type)
+          if str_version_full == "":
+            continue
+          if str_version_full == "c":
+            break
+          print("Version input by user: %s \n continue?\n"%str_version_full)
+          print(self.generate_string(self.list_yes_no))
+          str_action_temp = input("Make a selection --> ")
+          if str_action_temp != "" and str_action_temp != "1":
+            continue
           action_version_folder_index = self.get_folder_index_from_version_string(str_version_full)
         try:
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
-          print("version selected : %s"%str_action_version_folder)
+          print("version found and selected : %s"%str_action_version_folder)
         except:
           self.pause("\ninvalid folder selection")
         else:
