@@ -373,10 +373,6 @@ class spin_up():
     while continue_application == True:
       # clear terminal window
       self.clear_cmd_window()
-      
-      # feature not working yet - seems to need AWS S3 Key and Secret, but not sure...
-      #print("\navailable downloads")
-      #self.list_available_downloads()
 
       # get user action choice
       valid_selection = False
@@ -384,8 +380,6 @@ class spin_up():
         self.clear_cmd_window()
         self.show_running_version_and_services()
         self.list_action_options()
-        #self.print_running_versions()
-        #self.print_version_folder()
         int_action_choice = input("Make a selection --> ")
         if int_action_choice == "":
           int_action_choice = 0
@@ -491,7 +485,7 @@ class spin_up():
           str_action_version_folder = self.list_folder_names[action_version_folder_index]
           print("version found and selected : %s"%str_action_version_folder)
         except:
-          self.pause("\ninvalid folder selection")
+          self.invalid_user_input_notice()
         else:
           valid_selection = True
           path_action_version_folder = self.path_root + str_action_version_folder + "/"
@@ -549,7 +543,7 @@ class spin_up():
                   elif int_action_choice >= 0 and int_action_choice <= len(self.list_str_log_folders):
                     valid_selection = True
                   else:
-                    self.pause("invalid selection")
+                    self.invalid_user_input_notice()
                     
                   # get string value of choice
                   if int_action_choice == 0:
@@ -562,14 +556,6 @@ class spin_up():
                   elif str_action_choice_temp == "app":
                     path_action_version_action = path_action_version_folder + self.path_app_log
               str_action_description = "open log file"
-              #path_action_version_action = '"' + self.path_root + '"'
-              #path_action_version_action = '"' + self.path_root.replace("/","\\") + '"'
-              
-              #print(path_action_version_action)
-              #os.system("start cmd /c %s"%path_action_version_action)      
-              #os.system("start explorer.exe %s"%path_action_version_action)
-              #time.sleep(3)
-          
             case default:
               None
               break
@@ -601,9 +587,7 @@ class spin_up():
           path_action_version_action = '"' + path_action_version_action + '"'
           self.clear_cmd_window()
           print("\nExecuting : %s"%path_action_version_action)
-          #path_action_version_action = path_action_version_action.replace("/","\\")
           os.system("start cmd /c %s"%path_action_version_action)
-          #str_input = input("\nPress enter to continue --> ")
     
     
       # confirm action
