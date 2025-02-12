@@ -32,7 +32,8 @@ class spin_up():
     self.list_str_actions = ["Start","Stop","Restart","Open Admin portal","Open TCP root folder","Open version folder","Open log file","Copy config files","Download file from QA S3","TCP control panel","Reset (enter)","Exit"]
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
-      
+    
+    self.show_first_run_notice()
     # start main loop
     #self.create_window()
     self.main()
@@ -329,7 +330,43 @@ class spin_up():
     print("\nfolder names")
     str_print = self.generate_string(self.list_folder_names)
     print(str_print)
-      
+  
+  def show_first_run_notice(self):
+    self.clear_cmd_window()
+    str_to_present = "spin_up_utility\n"
+    str_to_present = str_to_present + "developed by Jason Hall 2/12/2025\n"
+    str_to_present = str_to_present + "\n"
+    str_to_present = str_to_present + "*This utility provides multiple features for working with local TCP instances\n"
+    str_to_present = str_to_present + "*Prerequisite: This utility requires that the TCP folder be located at: %s\n"%self.path_root
+    str_to_present = str_to_present + "*The utility can be exited at any time by pressing ctrl+c\n"
+    print(str_to_present)
+    input("Press enter to continue --> ")
+    
+  def list_action_options(self):
+    # user selects an action
+    print("\nActions:\n")
+    str_action = self.generate_string(self.list_str_actions)
+    print(str_action)    
+    
+  def show_running_version_and_services(self):      
+    # print list of running versions
+    list_running_versions_and_services = self.get_list_running_versions()
+    self.list_running_versions = list_running_versions_and_services[0]
+    self.list_running_services = list_running_versions_and_services[1]
+    print("\nrunning versions")
+    print(self.list_running_versions)
+    print("\nrunning services")
+    str_print = self.generate_string(self.list_running_services)
+    print(str_print)
+    self.print_divider()    
+    
+  def print_divider(self):
+    str_to_present = "-" * 40
+    print(str_to_present)
+    
+  def invalid_user_input_notice(self):
+    self.pause("invalid input")
+    
   # command line utilization until GUI is ready 
   def main(self):
     continue_application = True    
@@ -337,61 +374,41 @@ class spin_up():
       # clear terminal window
       self.clear_cmd_window()
       
-      # print list of running versions
-      list_running_versions_and_services = self.get_list_running_versions()
-      self.list_running_versions = list_running_versions_and_services[0]
-      self.list_running_services = list_running_versions_and_services[1]
-      print("\nrunning versions")
-      print(self.list_running_versions)
-      print("\nrunning services")
-      str_print = self.generate_string(self.list_running_services)
-      print(str_print)
-      
       # feature not working yet - seems to need AWS S3 Key and Secret, but not sure...
       #print("\navailable downloads")
       #self.list_available_downloads()
-      
-      
-      # print list of installed versions
-      #print("\ninstalled versions")
-      #print(self.list_installed_versions)
-      
-      # user selects an action
-      print("\n")
-      str_action = self.generate_string(self.list_str_actions)
-      print(str_action)
 
       # get user action choice
       valid_selection = False
       while valid_selection == False:
+        self.clear_cmd_window()
+        self.show_running_version_and_services()
+        self.list_action_options()
         #self.print_running_versions()
         #self.print_version_folder()
+        int_action_choice = input("Make a selection --> ")
+        if int_action_choice == "":
+          int_action_choice = 0
         try:
-          int_action_choice = input("Make a selection --> ")
-        except:
-          self.soft_exit()
+          int_action_choice = int(int_action_choice)
+        except: # invalid user input
+          self.invalid_user_input_notice()
+          continue
+        if int_action_choice > 0 and int_action_choice <= len(self.list_str_actions):
+          valid_selection = True
         else:
-          try:
-            if int_action_choice == "":
-              int_action_choice = 0
-            else:
-              int_action_choice = int(int_action_choice)
-          except: # invalid user input
-            print(int_action_choice)
-            continue
-          if int_action_choice == 0:
-            valid_selection = True
-          elif int_action_choice >= 0 and int_action_choice <= len(self.list_str_actions):
-            valid_selection = True
-          else:
-            print("\ninvalid selection - try again\n")
-            
-          # get string value of choice
-          if int_action_choice == 0:
-            str_action_choice = "Reset (enter)"
-          else:
-            str_action_choice = self.list_str_actions[int_action_choice - 1]
-          print(str_action_choice)
+          self.invalid_user_input_notice()
+          continue
+        if valid_selection == False:
+          self.invalid_user_input_notice()
+          continue            
+          
+        # get string value of choice
+        if int_action_choice == 0:
+          str_action_choice = "Reset (enter)"
+        else:
+          str_action_choice = self.list_str_actions[int_action_choice - 1]
+        print(str_action_choice)
     
       # perform non version specific actions
       self.clear_cmd_window()
@@ -422,7 +439,7 @@ class spin_up():
           str_action_description = "resetting application: "
           
         case "Exit":
-          str_action_description = "attempting to exit application: "
+          self.pause("Exiting")
           self.soft_exit()
           
         case default:
@@ -443,7 +460,7 @@ class spin_up():
           str_to_present = str_to_present + "(enter = current version[%s])"%self.list_running_versions[0]
         str_to_present = str_to_present + ": --> "
         version_selection_type = input(str_to_present)
-
+        
         if version_selection_type == "": # user pressed enter to select current running version
           if len(self.list_running_versions) >= 0:
             # get index of current running version in list_folder_names
@@ -460,10 +477,11 @@ class spin_up():
         else: # User typed a number - find the correct version folder index
           str_version_full = self.build_version_str_from_user_input(version_selection_type)
           if str_version_full == "":
+            self.invalid_user_input_notice()
             continue
           if str_version_full == "c":
             break
-          print("Version input by user: %s \n continue?\n"%str_version_full)
+          print("\nVersion input by user: %s \n Continue?"%str_version_full)
           print(self.generate_string(self.list_yes_no))
           str_action_temp = input("Make a selection --> ")
           if str_action_temp != "" and str_action_temp != "1":
@@ -558,7 +576,7 @@ class spin_up():
           
           # confirm action
           self.clear_cmd_window()
-          str_action_description = "\nAttempt to %s?"%str_action_description + path_action_version_action
+          str_action_description = "\nAttempt to %s ?"%str_action_description + path_action_version_action
           print(str_action_description)
           print("\n")
           str_action = self.generate_string(['Yes [Enter]','Cancel'])

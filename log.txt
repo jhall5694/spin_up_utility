@@ -99,3 +99,16 @@
 2025-02-12 08:42:41.505473 : exit btn pressed
 2025-02-12 08:43:20.041530 : exit btn pressed
 2025-02-12 08:43:35.042579 : exit btn pressed
+2025-02-12 10:20:27.271045 : exit btn pressed
+2025-02-12 10:21:10.663847 : exit btn pressed
+2025-02-12 10:23:46.503756 : exit btn pressed
+2025-02-12 10:24:35.832958 : exit btn pressed
+2025-02-12 10:24:50.284750 : exit btn pressed
+2025-02-12 10:24:58.489539 : exit btn pressed
+2025-02-12 10:25:38.922574 : exit btn pressed
+2025-02-12 10:26:32.488502 : exit btn pressed
+2025-02-12 10:27:04.372624 : exit btn pressed
+2025-02-12 10:27:24.322795 : exit btn pressed
+2025-02-12 11:09:36.058885 : exit btn pressed
+2025-02-12 11:12:11.254319 : exit btn pressed
+2025-02-12 11:12:27.163064 : exit btn pressed
