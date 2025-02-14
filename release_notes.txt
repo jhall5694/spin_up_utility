@@ -15,9 +15,35 @@
 
 
 1.4
-* TODO - Open log files
+* fixed wrong folder index
+* added stop step before start action 
+* copy config files
+* Open log file folders
+* Check that each TCP service is running
+* select by typing version 021025
+  ** also brought functionality to download interface 021125
+* TODO - usability for team, i.e. no absolute paths
+* TODO - re-factor code
+* TODO - Add help menu items
+* TODO - Download pri repository file
+  ** In progress - not working - seems to need AWS S3 Key and Secret, but not sure...
+  ** may want to look into parsing dom on pri website
+  ** TODO - extract and move to TCP folder
+* TODO - open yaml files
+* TODO - yaml options
+  ** e.g. autoimport, WSH, etc
 * TODO - open control panel 
   ** In progress - not working - not opening necessary prompt to allow actions - 
+<<<<<<< HEAD
 * TODO - copy config files
 * test 2
+=======
+* TODO - open auto import folder
+
+
+
+
+
+
+>>>>>>> feature_branch
 
