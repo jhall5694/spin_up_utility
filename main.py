@@ -390,6 +390,8 @@ class spin_up():
         int_action_choice = input("Make a selection --> ")
         if int_action_choice == "":
           int_action_choice = 0         
+        
+        # accelerator keys
         match int_action_choice:
           case "s":
             int_action_choice = self.get_action_index_from_action_string("Start (s)") + 1
