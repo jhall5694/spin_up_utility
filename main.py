@@ -30,8 +30,9 @@ class spin_up():
     self.latest_rc_build = 0
     self.latest_drc_build = 0
     self.list_folder_names = []
-    self.list_str_actions = ["(s) Start","(p) Stop","(r) Restart","(a) Open Admin portal","(rf) Open TCP root folder","(vf) Open version folder","(l) Open log file","(cf) Copy config files","(d) Download file from QA S3","(df) Open downloads folder","TCP control panel","Reset (enter)","(x) Exit"]
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","(df)":"Open downloads folder","t":"TCP control panel","":"Reset","x":"Exit"}
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    self.list_str_action_keys = list(self.dict_str_actions.keys())
+    self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
     
@@ -256,9 +257,9 @@ class spin_up():
     
   def get_action_index_from_action_string(self, str_var):
     try:
-      list_index = self.list_str_actions.index(str_var)
+      list_index = self.list_str_action_values.index(str_var)
     except:
-      list_index = len(self.list_str_actions) + 999
+      list_index = len(self.list_str_action_values) + 999
     return list_index
     
   def get_folder_index_from_version_string(self,str_var):
@@ -358,8 +359,12 @@ class spin_up():
   def list_action_options(self):
     # user selects an action
     print("\nActions:\n")
-    str_action = self.generate_string(self.list_str_actions)
-    print(str_action)    
+    str_action = ""
+    indx = 1
+    for val in self.dict_str_actions.items():
+      str_action = str_action + "\n" + str(indx) + ") [" + val[0] + "] : " + val[1]
+      indx = indx + 1
+    print(str_action)  
     
   def show_running_version_and_services(self):      
     # print list of running versions
@@ -394,85 +399,42 @@ class spin_up():
         self.show_running_version_and_services()
         self.list_action_options()
         int_action_choice = input("Make a selection --> ")
-        if int_action_choice == "":
-          int_action_choice = 0         
         
-        # accelerator keys
-        match int_action_choice:
-          case "s":
-            int_action_choice = self.get_action_index_from_action_string("(s) Start") + 1
-
-          case "p":
-            int_action_choice = self.get_action_index_from_action_string("(p) Stop") + 1
-
-          case "r":
-            int_action_choice = self.get_action_index_from_action_string("(r) Restart") + 1
-
-          case "a":
-            int_action_choice = self.get_action_index_from_action_string("(a) Open Admin portal") + 1
-
-          case "rf":
-            int_action_choice = self.get_action_index_from_action_string("(rf) Open TCP root folder") + 1
-
-          case "vf":
-            int_action_choice = self.get_action_index_from_action_string("(vf) Open version folder") + 1
-
-          case "l":
-            int_action_choice = self.get_action_index_from_action_string("(l) Open log file") + 1
-
-          case "cf":
-            int_action_choice = self.get_action_index_from_action_string("(cf) Copy config files") + 1
-
-          case "d":
-            int_action_choice = self.get_action_index_from_action_string("(d) Download file from QA S3") + 1
-            
-          case "df":
-            int_action_choice = self.get_action_index_from_action_string("(df) Open downloads folder") + 1            
-
-          case "x":
-            int_action_choice = self.get_action_index_from_action_string("(x) Exit") + 1
-            
+        # see if user entered shortcut key, e.g., user entered "df" for "Open downloads folder"
+        try:
+          int_action_choice = self.list_str_action_keys.index(int_action_choice) + 1
+        except:
+          None # non shortcut key entered
+          
+        # get action string description  
         try:
           int_action_choice = int(int_action_choice)
-        except: # invalid user input
+          str_action_choice = self.list_str_action_values[int_action_choice - 1]
+        except:
           self.invalid_user_input_notice()
-          continue
-        if int_action_choice >= 0 and int_action_choice <= len(self.list_str_actions):
+        else:
           valid_selection = True
-        else:
-          self.invalid_user_input_notice()
-          continue
-        if valid_selection == False:
-          self.invalid_user_input_notice()
-          continue            
-          
-        # get string value of choice
-        if int_action_choice == 0:
-          str_action_choice = "Reset (enter)"
-        else:
-          str_action_choice = self.list_str_actions[int_action_choice - 1]
-        print(str_action_choice)
-    
+      
       # perform non version specific actions
       self.clear_cmd_window()
       ask_for_version_folder = False 
       match str_action_choice: 
-        case "(a) Open Admin portal":
+        case "Open Admin portal":
           computer_name = os.environ['COMPUTERNAME']
           webbrowser.open('http://%s:9443/app/admin/#/AdminLogOn'%computer_name)
           time.sleep(3)
           
-        case "(rf) Open TCP root folder":
+        case "Open TCP root folder":
           str_action_description = "attempting to open TCP root folder: "
           path_action_version_action = '"' + self.path_root.replace("/","\\") + '"'
           os.system("start explorer.exe %s"%path_action_version_action)
           time.sleep(3)            
           
-        case "(d) Download file from QA S3":
+        case "Download file from QA S3":
           str_action_description = "attempting to download file: "
           self.download_file()
           
-        case "(df) Open downloads folder":
+        case "Open downloads folder":
           str_action_description = "attempting to open downloads folder: "
           path_action_version_action = '"' + self.path_downloads.replace("/","\\") + '"'
           os.system("start explorer.exe %s"%path_action_version_action)
@@ -481,7 +443,7 @@ class spin_up():
         case "Reset (enter)":
           str_action_description = "resetting application: "
           
-        case "(x) Exit":
+        case "Exit":
           self.pause("Exiting")
           self.soft_exit()
           
@@ -541,33 +503,33 @@ class spin_up():
           valid_selection = True
           path_action_version_folder = self.path_root + str_action_version_folder + "/"
           match str_action_choice:
-            case "(s) Start":
+            case "Start":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "start.bat"            
-              str_action_description = "(s) Start"
+              str_action_description = "Start"
               
-            case "(p) Stop":
+            case "Stop":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "stop.bat"
-              str_action_description = "(p) Stop"
+              str_action_description = "Stop"
               
-            case "(r) Restart":
+            case "Restart":
               path_action_version_action = path_action_version_folder + self.path_bin_root + "restart.bat"
-              str_action_description = "(r) Restart"
+              str_action_description = "Restart"
           
             case "TCP control panel":
               path_action_version_action = path_action_version_folder + self.path_control_panel
               str_action_description = "open TCP control panel"
               path_action_version_action = '"' + path_action_version_action + '"'
               
-            case "(cf) Copy config files":
+            case "Copy config files":
               path_action_version_action = path_action_version_folder + self.path_cfg_root
-              str_action_description = "(cf) Copy config files"
+              str_action_description = "Copy config files"
               
-            case "(vf) Open version folder":
+            case "Open version folder":
               str_action_description = "open version folder: "
               path_action_version_action = '"' + path_action_version_folder.replace("/","\\") + '"'
               #os.system("start explorer.exe %s"%path_action_version_action)
               
-            case "(l) Open log file":
+            case "Open log file":
               #input_log_src = input("
               str_action = self.generate_string(self.list_str_log_folders)
               print("\n")
@@ -606,7 +568,7 @@ class spin_up():
                     path_action_version_action = path_action_version_folder + self.path_adm_log
                   elif str_action_choice_temp == "app":
                     path_action_version_action = path_action_version_folder + self.path_app_log
-              str_action_description = "(l) Open log file"
+              str_action_description = "Open log file"
             case default:
               None
               break
@@ -621,16 +583,16 @@ class spin_up():
           if str_input != "1" and str_input != "": # user chose to cancel action
             break
             
-          if str_action_choice == "(cf) Copy config files":
+          if str_action_choice == "Copy config files":
             dest = shutil.copytree(self.path_root + self.path_cfg_template, path_action_version_action, dirs_exist_ok = True)
             dest = shutil.copy(self.path_root + self.path_cfg_template + "AdmPass.txt", path_action_version_folder + self.path_adm_cfg + "AdmPass.txt")
             break
           elif str_action_choice == "TCP control panel":
             os.startfile(path_action_version_action)
             break
-          elif str_action_choice == "(l) Open log file":
+          elif str_action_choice == "Open log file":
             os.startfile(path_action_version_action)
-          elif str_action_choice == "(vf) Open version folder":  
+          elif str_action_choice == "Open version folder":  
             os.system("start explorer.exe %s"%path_action_version_action)
             break            
             
