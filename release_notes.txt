@@ -34,19 +34,4 @@
   ** e.g. autoimport, WSH, etc
 * TODO - open control panel 
   ** In progress - not working - not opening necessary prompt to allow actions - 
-<<<<<<< HEAD
-* TODO - copy config files
-<<<<<<< HEAD
-* test 2
-=======
-* TODO - open auto import folder
-
-
-
-
-
-
->>>>>>> feature_branch
-=======
->>>>>>> dabcf1d1cb10ad99275759e5b8603919eed3676c
 
