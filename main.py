@@ -18,6 +18,11 @@ class spin_up():
     self.path_root = 'C:/Program Files (x86)/TimeClock Plus 7.0/'
     self.path_downloads = 'c:/Users/' + self.curr_windows_user + '/Downloads'
     self.path_cfg_root = 'cfg/'
+    self.filename_cfg_adm = "config.adm.yaml"
+    self.filename_cfg_app = "config.app.yaml"
+    self.filename_cfg_ctl = "config.ctl.yaml"
+    self.filename_cfg_hub = "config.hub.yaml"
+    self.filename_cfg_pwh = "config.pwh.yaml"
     self.path_adm_cfg = 'adm/lib/tcpws-1.0.0/cfg/'
     self.path_bin_root = 'bin/'
     self.path_cfg_template = 'cfg_template/'
@@ -29,8 +34,13 @@ class spin_up():
     self.list_installed_versions = []
     self.latest_rc_build = 0
     self.latest_drc_build = 0
+    self.list_cfg_files = ["adm","app","workstation hub"]
+    self.list_adm_cfg_fields = [""]
+    self.list_app_cfg_fields = [""]
+    self.list_pwh_cfg_fields = ["server enabled"]
+    self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
@@ -326,6 +336,140 @@ class spin_up():
     curr_user = os.getenv("USERNAME")
     return curr_user
  
+  # modify config files
+  def read_write_config_file(self, file_cfg, field, val=""):
+    path_file_cfg = ""
+    str_field = ""
+    
+    match file_cfg:
+      case "adm":
+        path_file_cfg = self.filename_cfg_adm
+        match field:
+          case "auto_import":
+            None
+      
+      case "app":
+        path_file_cfg = self.filename_cfg_app
+        match field:
+            case "auto_import":
+              None
+        
+      case "workstation hub":
+        path_file_cfg = self.filename_cfg_pwh
+        match field:
+          case "wsh enabled":
+            section = "nginx"
+            str_field = "http.server.enabled"
+            if val == "yes":
+              val = "True"
+            else:
+              val = "False"
+
+    if val == "": # user is requesting to get a cfg field value
+      None
+    else: # user requesting to set a cfg field value
+      None
+
+  def cfg_file_interface(self, path_version_folder):
+    # user chooses config file
+    valid_selection = False
+    while valid_selection == False:
+      print("action selected: read/write cfg settings")
+      print("choose a config file to read/write")
+      str_action = self.generate_string(self.list_cfg_files)
+      print(str_action)
+      str_action_choice = input("Make a selection (c = cancel) --> ")
+      
+      match str_action_choice:
+        case "c":
+          return
+          
+        case "1": # adm
+          valid_selection = True
+          user_file_selection_display = "adm"
+          user_fields_to_present = self.list_adm_cfg_fields
+          
+        case "2": # app
+          valid_selection = True
+          user_file_selection_display = "app"
+          user_fields_to_present = self.list_app_cfg_fields
+          
+        case "3": # workstation hub
+          valid_selection = True
+          user_file_selection_display = "workstation hub"
+          user_fields_to_present = self.list_pwh_cfg_fields
+          print(user_fields_to_present)
+          
+        case default:
+          self.invalid_user_input_notice()
+          continue
+          
+
+    # user chooses cfg file field
+    valid_selection = False
+    while valid_selection == False:
+      print("cfg file selected: %s"%user_file_selection_display)
+      print("choose a cfg file field")
+      str_action = self.generate_string(user_fields_to_present)
+      print(str_action)
+      str_action_choice = input("Make a selection (c = cancel) --> ")
+      
+      match str_action_choice:
+        case "c":
+          return
+          
+        case default:
+          try:
+            str_field = user_fields_to_present[int(str_action_choice) - 1]
+          except:
+            self.invalid_user_input_notice()
+            continue
+          else:
+            valid_selection = True          
+    
+    # user chooses read/write
+    valid_selection = False
+    while valid_selection == False:
+      str_action = self.generate_string(self.list_read_write)
+      print(str_action)
+      str_action_choice = input("Make a selection (c = cancel) --> ")
+      
+      match str_action_choice:
+        case "c":
+          return
+          
+        case default:
+          try:
+            str_action_read_write = self.list_read_write[int(str_action_choice) - 1]
+          except:
+            self.invalid_user_input_notice()
+            continue        
+          else:
+            valid_selection = True
+      
+    str_val_to_write = ""  
+    if str_action_read_write == "write":  
+      valid_selection = False
+      while valid_selection == False:
+        str_val_to_write = input("value to write (c = cancel) --> ")      
+        
+        match str_action_choice:
+          case "c":
+            return
+            
+          case "":
+            self.invalid_user_input_notice()
+            continue
+            
+          case default:
+            valid_selection = True
+    
+    # call function to perform action on cfg file
+    self.read_write_config_file(user_file_selection_display, str_field, str_val_to_write) # read_write_config_file(self, file_cfg, field, val=""):
+
+
+
+ 
   # GUI -----------------------------------------------------------------
   def create_window(self):
     None
@@ -363,14 +507,10 @@ class spin_up():
     indx = 1
     for val in self.dict_str_actions.items():    
       space_multiplier = (len(str(indx)) - 2) * -1
-      #print("space_multiplier : %s"%space_multiplier)
       str_spaces_indx = " " * space_multiplier
       space_multiplier = (len(val[0]) - 2) * -1
-      #print("val : %s   space_multiplier : %s"%(val,space_multiplier))
       str_spaces_shortcut_key = " " * space_multiplier 
-      
       str_action = str_action + "\n" + str(indx) + ") " + str_spaces_indx + " [" + val[0] + "]" + str_spaces_shortcut_key + " : " + val[1]
-      
       indx = indx + 1
     print(str_action)  
     
@@ -384,7 +524,7 @@ class spin_up():
     print("\nrunning services")
     str_print = self.generate_string(self.list_running_services)
     print(str_print)
-    self.print_divider()    
+    self.print_divider()
     
   def print_divider(self):
     str_to_present = "-" * 40
@@ -531,6 +671,11 @@ class spin_up():
             case "Copy config files":
               path_action_version_action = path_action_version_folder + self.path_cfg_root
               str_action_description = "Copy config files"
+              
+            case "read/write cfg settings":
+              str_action_description = "read/write cfg settings"
+              self.cfg_file_interface(path_action_version_folder)
+              break
               
             case "Open version folder":
               str_action_description = "open version folder: "
