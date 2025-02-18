@@ -361,8 +361,16 @@ class spin_up():
     print("\nActions:\n")
     str_action = ""
     indx = 1
-    for val in self.dict_str_actions.items():
-      str_action = str_action + "\n" + str(indx) + ") [" + val[0] + "] : " + val[1]
+    for val in self.dict_str_actions.items():    
+      space_multiplier = (len(str(indx)) - 2) * -1
+      #print("space_multiplier : %s"%space_multiplier)
+      str_spaces_indx = " " * space_multiplier
+      space_multiplier = (len(val[0]) - 2) * -1
+      #print("val : %s   space_multiplier : %s"%(val,space_multiplier))
+      str_spaces_shortcut_key = " " * space_multiplier 
+      
+      str_action = str_action + "\n" + str(indx) + ") " + str_spaces_indx + " [" + val[0] + "]" + str_spaces_shortcut_key + " : " + val[1]
+      
       indx = indx + 1
     print(str_action)  
     
