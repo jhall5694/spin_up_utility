@@ -6,6 +6,7 @@ import sys
 import time
 import shutil
 import boto3 # AWS access
+import yaml
 
 '''  Changes
 * Actions stored in list
@@ -40,11 +41,16 @@ class spin_up():
     self.list_pwh_cfg_fields = ["server enabled"]
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
+    
+    #filepath = "C:/Program Files (x86)/TimeClock Plus 7.0/7.1.57.145/cfg/config.pwh.yaml"
+    #self.yaml_to_list(filepath)
+    #self.soft_exit()
     
     self.show_first_run_notice()
     # start main loop
@@ -357,13 +363,13 @@ class spin_up():
       case "workstation hub":
         path_file_cfg = self.filename_cfg_pwh
         match field:
-          case "wsh enabled":
+          case "server enabled":
             section = "nginx"
             str_field = "http.server.enabled"
             if val == "yes":
-              val = "True"
+              val = "true"
             else:
-              val = "False"
+              val = "false"
 
     if val == "": # user is requesting to get a cfg field value
       None
@@ -467,8 +473,14 @@ class spin_up():
     # call function to perform action on cfg file
     self.read_write_config_file(user_file_selection_display, str_field, str_val_to_write) # read_write_config_file(self, file_cfg, field, val=""):
 
-
-
+  def yaml_to_list(self,filepath):
+    print("askjldh")
+    print(filepath)
+    with open(filepath, 'r') as f:
+        data = yaml.load(f, Loader=yaml.SafeLoader)
+        
+    # Print the values as a dictionary
+    print(data)
  
   # GUI -----------------------------------------------------------------
   def create_window(self):
