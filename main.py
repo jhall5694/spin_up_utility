@@ -43,11 +43,14 @@ class spin_up():
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
     #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","z":"Unzip file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
+    
+    self.path_last_downloaded_file = ""    
+
       
     #filepath = "C:/Program Files (x86)/TimeClock Plus 7.0/7.1.57.145/cfg/config.pwh.yaml"
     #self.yaml_to_list(filepath)
@@ -210,7 +213,7 @@ class spin_up():
       str_action_choice = input("Make a selection --> ")
       self.clear_cmd_window()
       if str_action_choice == "2":
-        str_file_to_download = input("enter the full filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
+        str_filename_to_download = input("enter the full filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
       else:
         str_to_present = "\nEnter the full or partial version number(c = cancel) --> "
         version_selection_type = input(str_to_present)
@@ -219,12 +222,15 @@ class spin_up():
         if version_selection_type == "c":
           return        
         str_version = self.build_version_str_from_user_input(version_selection_type)
-      if str_version == "":
-        continue
-      if str_version == "c":
-        return
-      str_file_to_download = "tcp.core-" + str_version + ".zip"
-      str_file_to_download = "pri.tcplusondemand.com/core/qa/" + str_file_to_download
+        if str_version == "error":
+          self.invalid_user_input_notice()
+        if str_version == "c":
+          return
+    
+        if str_version != "":
+            str_filename_to_download = "tcp.core-" + str_version + ".zip"
+      
+      str_file_to_download = "pri.tcplusondemand.com/core/qa/" + str_filename_to_download
       
       str_action_choice = input("\nattempt to download %s? (c = cancel)"%str_file_to_download)
       if str_action_choice == "c":
@@ -233,6 +239,9 @@ class spin_up():
       
       # open link in browser - temporary solution until consistent aws s3 functionality is obtained
       webbrowser.open('http://%s'%str_file_to_download)
+      
+      self.path_last_downloaded_file = 'C:/Users/' + self.curr_windows_user + '/Downloads' + str_filename_to_download
+      
       
       # method utilizing aws s3 needs more research to be consistent
       '''
@@ -263,13 +272,32 @@ class spin_up():
         cl = True
         self.clear_cmd_window()
    
-  def extract_file(self, file_path):
+  def unzip_file(self):
+    if self.path_last_downloaded_file == "":
+      path_temp = input("Enter full path to the zip file --> ")
+      try:
+        exists = os.path.exists(path_temp)
+      except:
+        self.pause("make sure zip file exists then try again")
+        return
+      else:
+        self.path_last_downloaded_file = path_temp
+        
+    path_file_to_download = self.path_last_downloaded_file.replace("\\","/")
+    
+    cl = input("Press enter to attempt to extract %s ? (c = cancel)"%path_file_to_download)
+    if cl == "c":
+      return
     try:
-      with zipfile.ZipFile(file_path, 'r') as zip_ref:
-        zip_ref.extractall('C:/Users/JHALL/Downloads')
+      with zipfile.ZipFile(path_file_to_download, 'r') as zip_ref:
+        path_downloads = 'C:/Users/' + self.curr_windows_user + '/Downloads'
+        print("file extracting to %s \n please wait..."%path_downloads)
+        zip_ref.extractall(path_downloads)
     except:
-      self.invalid_user_input_notice()
-      return "extract failed"      
+      self.pause("make sure zip file exists then try again")
+      return "extract failed"
+    else:
+      self.pause("file extracted to %s"%path_downloads)  
   
   # generate string for user input
   def generate_string(self, list_data):
@@ -296,7 +324,7 @@ class spin_up():
     
   # user entered version number string - generate full version string
   def build_version_str_from_user_input(self,str_var):
-    str_full_version = ""
+    str_full_version = "error"
     
     for char in str_var: # verify user entered valid input
       match char:
@@ -603,6 +631,10 @@ class spin_up():
           str_action_description = "attempting to download file: "
           self.download_file()
           
+        case "Unzip file":
+          str_action_description = "attempting to Unzip file: "
+          self.unzip_file()
+          
         case "Open downloads folder":
           str_action_description = "attempting to open downloads folder: "
           path_action_version_action = '"' + self.path_downloads.replace("/","\\") + '"'
@@ -652,7 +684,7 @@ class spin_up():
             action_version_folder_index = int(action_version_folder_index) - 1
         else: # User typed a number - find the correct version folder index
           str_version_full = self.build_version_str_from_user_input(version_selection_type)
-          if str_version_full == "":
+          if str_version_full == "error":
             self.invalid_user_input_notice()
             continue
           if str_version_full == "c":
