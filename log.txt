@@ -117,3 +117,14 @@
 2025-02-18 16:42:36.857278 : exit btn pressed
 2025-02-18 16:55:33.547629 : exit btn pressed
 2025-02-18 16:56:23.140463 : exit btn pressed
+2025-02-19 10:21:13.242023 : exit btn pressed
+2025-02-19 10:21:40.873299 : exit btn pressed
+2025-02-19 10:21:51.800833 : exit btn pressed
+2025-02-19 10:23:10.608062 : exit btn pressed
+2025-02-19 10:23:43.759288 : exit btn pressed
+2025-02-19 10:23:54.703953 : exit btn pressed
+2025-02-19 10:24:29.780346 : exit btn pressed
+2025-02-19 10:24:30.794665 : exit btn pressed
+2025-02-19 10:25:15.900327 : exit btn pressed
+2025-02-19 10:25:22.673151 : exit btn pressed
+2025-02-19 10:26:53.689493 : exit btn pressed

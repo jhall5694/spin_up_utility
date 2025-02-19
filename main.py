@@ -7,6 +7,7 @@ import time
 import shutil
 import boto3 # AWS access
 import yaml
+import zipfile
 
 '''  Changes
 * Actions stored in list
@@ -47,7 +48,7 @@ class spin_up():
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
-    
+      
     #filepath = "C:/Program Files (x86)/TimeClock Plus 7.0/7.1.57.145/cfg/config.pwh.yaml"
     #self.yaml_to_list(filepath)
     #self.soft_exit()
@@ -261,7 +262,15 @@ class spin_up():
       else:
         cl = True
         self.clear_cmd_window()
-          
+   
+  def extract_file(self, file_path):
+    try:
+      with zipfile.ZipFile(file_path, 'r') as zip_ref:
+        zip_ref.extractall('C:/Users/JHALL/Downloads')
+    except:
+      self.invalid_user_input_notice()
+      return "extract failed"      
+  
   # generate string for user input
   def generate_string(self, list_data):
     index = 1

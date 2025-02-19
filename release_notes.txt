@@ -22,7 +22,7 @@
 * Check that each TCP service is running
 * select by typing version 021025
   ** also brought functionality to download interface 021125
-* TODO - usability for team, i.e. no absolute paths
+* TODO - unzip
 * TODO - re-factor code
 * TODO - Add help menu items
 * TODO - Download pri repository file
