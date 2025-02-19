@@ -8,6 +8,14 @@ import shutil
 import boto3 # AWS access
 import yaml
 import zipfile
+import socket
+#import dns.resolver
+import requests
+import boto3
+from botocore import UNSIGNED
+from botocore.config import Config
+from bs4 import BeautifulSoup
+import urllib.parse
 
 '''  Changes
 * Actions stored in list
@@ -43,7 +51,7 @@ class spin_up():
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
     #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","z":"Unzip file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
@@ -51,6 +59,71 @@ class spin_up():
     
     self.path_last_downloaded_file = ""    
 
+
+    # temporary testing space
+    #if True:
+    if False:
+      # Base URL
+      base_url = "http://pri.tcplusondemand.com.s3-website-us-east-1.amazonaws.com/core/qa/"
+
+      # Fetch the directory listing
+      response = requests.get(base_url)
+
+      if response.status_code == 200:
+          soup = BeautifulSoup(response.text, "html.parser")
+          
+          files = []
+          
+          for a in soup.find_all("a", href=True):
+              file_name = a["href"]
+              
+              # Decode URL in case of special characters
+              decoded_file = urllib.parse.unquote(file_name)
+              
+              # Ignore directories (anything that ends with /)
+              if not decoded_file.endswith("/"):
+                  files.append(decoded_file)
+
+          print("Files found at core/qa/:")
+          for f in files:
+              print(f)
+
+      else:
+          print("Error:", response.status_code)
+
+      self.pause("asdf")
+      
+      '''  
+      url = "http://pri.tcplusondemand.com.s3.amazonaws.com/core/qa"
+
+      headers = {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+      }
+
+      response = requests.get(url, headers=headers)
+      
+      if response.status_code == 200:
+          print("Success:", response.content)
+          html_content = response.text
+          print(html_content)
+      else:
+          print("Error:", response.status_code, response.text)
+      self.soft_exit()
+      '''
+      # gave up on this...
+      '''
+      my_resolver = dns.resolver.Resolver()
+      my_resolver.nameservers = ['192.168.1.23', '8.8.8.8']
+      dns.resolver.override_system_resolver(my_resolver)
+
+      try:
+        answer = my_resolver.resolve("pri.tcplusondemand.com.s3.amazonaws.com/core/qa/tcp.core-7.1.57.162.zip")  # Replace with your actual domain
+        #answer = my_resolver.resolve("http://pri.tcplusondemand.com.s3-website-us-east-1.amazonaws.com/core/qa/")  # Replace with your actual domain
+        print("Resolved IPs:", [ip.address for ip in answer])
+      except Exception as e:
+        print("DNS resolution failed:", e)
+      self.soft_exit()
+      '''
       
     #filepath = "C:/Program Files (x86)/TimeClock Plus 7.0/7.1.57.145/cfg/config.pwh.yaml"
     #self.yaml_to_list(filepath)
@@ -291,7 +364,7 @@ class spin_up():
     try:
       with zipfile.ZipFile(path_file_to_download, 'r') as zip_ref:
         path_downloads = 'C:/Users/' + self.curr_windows_user + '/Downloads'
-        print("file extracting to %s \n please wait..."%path_downloads)
+        print("file extracting to %s \n please wait... (ctrl+c to cancel)"%path_downloads)
         zip_ref.extractall(path_downloads)
     except:
       self.pause("make sure zip file exists then try again")
@@ -631,8 +704,8 @@ class spin_up():
           str_action_description = "attempting to download file: "
           self.download_file()
           
-        case "Unzip file":
-          str_action_description = "attempting to Unzip file: "
+        case "Unzip a file":
+          str_action_description = "attempting to Unzip a file: "
           self.unzip_file()
           
         case "Open downloads folder":
