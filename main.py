@@ -51,14 +51,15 @@ class spin_up():
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
     #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download a file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "mf":"move file from downloads to TCP root folder","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
     self.list_yes_no = ["yes(enter)","no"]
 
     self.path_last_downloaded_file = ""
-
+    self.path_last_downloaded_version = ""
 
     # temporary testing space
     #if True:
@@ -281,12 +282,14 @@ class spin_up():
   def download_file(self):
     cl = True
     while cl == True:
+      is_tcp_download = True
       print("select method to specify file")
       print(self.generate_string(["version number (enter)","full filename"]))
       str_action_choice = input("Make a selection --> ")
       self.clear_cmd_window()
       if str_action_choice == "2":
         str_filename_to_download = input("enter the full filename you wish to download from pri.tcplusondemand.com/core/qa (press c to cancel) --> ")
+        is_tcp_download = False
       else:
         str_to_present = "\nEnter the full or partial version number(c = cancel) --> "
         version_selection_type = input(str_to_present)
@@ -313,8 +316,9 @@ class spin_up():
       # open link in browser - temporary solution until consistent aws s3 functionality is obtained
       webbrowser.open('http://%s'%str_file_to_download)
 
-      self.path_last_downloaded_file = 'C:/Users/' + self.curr_windows_user + '/Downloads' + str_filename_to_download
-
+      if is_tcp_download == True:
+          self.path_last_downloaded_file = 'C:/Users/' + self.curr_windows_user + '/Downloads/' + str_filename_to_download
+          self.path_last_downloaded_version = 'C:/Users/' + self.curr_windows_user + '/Downloads' + str_version
 
       # method utilizing aws s3 needs more research to be consistent
       '''
@@ -358,19 +362,90 @@ class spin_up():
 
     path_file_to_download = self.path_last_downloaded_file.replace("\\","/")
 
-    cl = input("Press enter to attempt to extract %s ? (c = cancel)"%path_file_to_download)
+    cl = input("Press enter to attempt to extract %s ? (c = cancel)(d = different file)"%path_file_to_download)
     if cl == "c":
       return
+    if cl == "d":
+      self.path_last_downloaded_file = ""
     try:
+      path_dest = self.path_root
+      print("file extracting to %s \n please wait... (ctrl+c to cancel)"%path_dest)      
       with zipfile.ZipFile(path_file_to_download, 'r') as zip_ref:
-        path_downloads = 'C:/Users/' + self.curr_windows_user + '/Downloads'
-        print("file extracting to %s \n please wait... (ctrl+c to cancel)"%path_downloads)
-        zip_ref.extractall(path_downloads)
+        #path_downloads = 'C:/Users/' + self.curr_windows_user + '/Downloads'
+        zip_ref.extractall(path_dest)
     except:
       self.pause("make sure zip file exists then try again")
       return "extract failed"
     else:
-      self.pause("file extracted to %s"%path_downloads)
+      try:
+        exists = os.path.exists(path_dest)
+      except:
+        self.pause("move file failed")
+      else:
+        self.pause("\nfile extracted to to %s"%path_dest)          
+      
+  def move_file(self):
+    if self.path_last_downloaded_file == "":
+      path_temp = input("Enter full path to the file to move --> ")
+      try:
+        exists = os.path.exists(path_temp)
+      except:
+        self.pause("make sure file exists then try again")
+        return
+      else:
+        if exists == False:
+          self.pause("make sure file exists then try again")
+          return
+        else:
+          path_file_to_move = path_temp
+    else:
+      path_file_to_move = self.path_last_downloaded_file
+    
+    path_file_to_move = path_file_to_move.replace("\\","/")
+    
+    try:
+      exists = os.path.exists(path_file_to_move)
+    except:
+      self.pause("make sure file exists then try again")
+      return 
+    else:
+      if exists == False:
+        self.pause("make sure file exists then try again")
+        return   
+    
+    list_path_file_to_move = path_file_to_move.split("/")
+    filename = list_path_file_to_move[len(list_path_file_to_move) - 1]
+    filename = filename.replace("tcp.core-","")
+    filename = filename.replace(".zip","")
+    path_destination = self.path_root + filename
+    path_destination = path_destination.replace("\\","/")      
+    
+    #print("\npath_file_to_move: %s"%path_file_to_move)  
+    #print("path_destination: %s"%path_destination)
+      
+    cl = input("\nPress enter to attempt to move %s to TCP root folder? (c = cancel)(d=move different file)"%path_file_to_move)
+    if cl == "c":
+      return
+    if cl == "d":
+      self.path_last_downloaded_file = ""
+    try:
+      shutil.move(path_file_to_move,path_destination)
+      
+      #with zipfile.ZipFile(path_file_to_move, 'r') as zip_ref:
+      #  path_downloads = 'C:/Users/' + self.curr_windows_user + '/Downloads'
+      #  print("moving file to TCP root folder \n please wait... (ctrl+c to cancel)"%path_downloads)
+        #zip_ref.extractall(path_downloads)
+    except:
+      raise
+      self.pause("make sure file exists then try again")
+      return "move file failed"
+    else:
+      try:
+        exists = os.path.exists(path_destination)
+      except:
+        self.pause("move file failed")
+      else:
+        self.pause("\nfile moved to %s"%path_destination)      
 
   # generate string for user input
   def generate_string(self, list_data):
@@ -719,6 +794,10 @@ class spin_up():
           str_action_description = "attempting to Unzip a file: "
           self.unzip_file()
 
+        case "move file from downloads to TCP root folder":
+          str_action_description = "attempting to move a file: "
+          self.move_file()
+          
         case "Open downloads folder":
           str_action_description = "attempting to open downloads folder: "
           path_action_version_action = '"' + self.path_downloads.replace("/","\\") + '"'
@@ -865,7 +944,7 @@ class spin_up():
 
           # confirm action
           self.clear_cmd_window()
-          str_action_description = "\nAttempt to %s ?"%str_action_description + path_action_version_action
+          str_action_description = "\nAttempt to %s %s?"%(str_action_description, path_action_version_action)
           print(str_action_description)
           str_action = self.generate_string(['Yes [Enter]','Cancel'])
           print("\n" + str_action)
