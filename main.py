@@ -10,12 +10,12 @@ import yaml
 import zipfile
 import socket
 #import dns.resolver
-import requests
-import boto3
-from botocore import UNSIGNED
-from botocore.config import Config
-from bs4 import BeautifulSoup
-import urllib.parse
+#import requests
+#import boto3
+#from botocore import UNSIGNED
+#from botocore.config import Config
+#from bs4 import BeautifulSoup
+#import urllib.parse
 
 '''  Changes
 * Actions stored in list
@@ -50,8 +50,8 @@ class spin_up():
     self.list_pwh_cfg_fields = ["server enabled"]
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
-    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin portal","rf":"Open TCP root folder","vf":"Open version folder","l":"Open log file","cf":"Copy config files","d":"Download file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
+    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download a file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
@@ -632,7 +632,7 @@ class spin_up():
       str_spaces_indx = " " * space_multiplier
       space_multiplier = (len(val[0]) - 2) * -1
       str_spaces_shortcut_key = " " * space_multiplier 
-      str_action = str_action + "\n" + str(indx) + ") " + str_spaces_indx + " [" + val[0] + "]" + str_spaces_shortcut_key + " : " + val[1]
+      str_action = str_action + str(indx) + ") " + str_spaces_indx + " [" + val[0] + "]" + str_spaces_shortcut_key + " : " + val[1] + "\n"
       indx = indx + 1
     print(str_action)  
     
@@ -641,11 +641,22 @@ class spin_up():
     list_running_versions_and_services = self.get_list_running_versions()
     self.list_running_versions = list_running_versions_and_services[0]
     self.list_running_services = list_running_versions_and_services[1]
-    print("\nrunning versions")
-    print(self.list_running_versions)
-    print("\nrunning services")
-    str_print = self.generate_string(self.list_running_services)
-    print(str_print)
+    str_print = "\nrunning versions: "
+    if len(self.list_running_versions)  < 1:
+      str_print = str_print + "none"
+      print(str_print)
+    else:
+      print(str_print)
+      print(self.list_running_versions)
+    str_print = ""
+    str_print = "\nrunning services: "
+    str_list_running_services = self.generate_string(self.list_running_services)
+    if str_list_running_services == "":
+      str_print = str_print + "none"
+      print(str_print)
+    else:
+      print(str_print)
+      print(str_list_running_services)
     self.print_divider()
     
   def print_divider(self):
@@ -689,7 +700,7 @@ class spin_up():
       self.clear_cmd_window()
       ask_for_version_folder = False 
       match str_action_choice: 
-        case "Open Admin portal":
+        case "Open Admin web portal":
           computer_name = os.environ['COMPUTERNAME']
           webbrowser.open('http://%s:9443/app/admin/#/AdminLogOn'%computer_name)
           time.sleep(3)
@@ -700,7 +711,7 @@ class spin_up():
           os.system("start explorer.exe %s"%path_action_version_action)
           time.sleep(3)            
           
-        case "Download file from QA S3":
+        case "Download a file from QA S3":
           str_action_description = "attempting to download file: "
           self.download_file()
           
@@ -803,8 +814,8 @@ class spin_up():
               self.cfg_file_interface(path_action_version_folder)
               break
               
-            case "Open version folder":
-              str_action_description = "open version folder: "
+            case "Open TCP version folder":
+              str_action_description = "Open TCP version folder: "
               path_action_version_action = '"' + path_action_version_folder.replace("/","\\") + '"'
               #os.system("start explorer.exe %s"%path_action_version_action)
               
@@ -871,7 +882,7 @@ class spin_up():
             break
           elif str_action_choice == "Open log file":
             os.startfile(path_action_version_action)
-          elif str_action_choice == "Open version folder":  
+          elif str_action_choice == "Open TCP version folder":  
             os.system("start explorer.exe %s"%path_action_version_action)
             break            
             
