@@ -50,9 +50,7 @@ class spin_up():
     self.list_pwh_cfg_fields = ["server enabled"]
     self.list_read_write = ["read (enter)","write"]
     self.list_folder_names = []
-    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","rw":"read/write cfg settings","d":"Download a file from QA S3","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    #self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "mf":"move file from downloads to TCP root folder","df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}
-    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "df":"Open downloads folder","t":"TCP control panel","":"Reset (enter)","x":"Exit"}    
+    self.dict_str_actions = {"s":"Start","p":"Stop","r":"Restart","a":"Open Admin web portal","rf":"Open TCP root folder","vf":"Open TCP version folder","l":"Open log file","cf":"Copy config files","d":"Download a file from QA S3","z":"Unzip a file", "df":"Open downloads folder","":"Reset/refresh utility (enter)","x":"Exit"}    
     self.list_str_action_keys = list(self.dict_str_actions.keys())
     self.list_str_action_values = list(self.dict_str_actions.values())
     self.list_str_log_folders = ["adm","app"]
@@ -60,75 +58,6 @@ class spin_up():
 
     self.path_last_downloaded_file = ""
     self.path_last_downloaded_version = ""
-
-    # temporary testing space
-    #if True:
-    if False:
-      # Base URL
-      base_url = "http://pri.tcplusondemand.com.s3-website-us-east-1.amazonaws.com/core/qa/"
-
-      # Fetch the directory listing
-      response = requests.get(base_url)
-
-      if response.status_code == 200:
-          soup = BeautifulSoup(response.text, "html.parser")
-
-          files = []
-
-          for a in soup.find_all("a", href=True):
-              file_name = a["href"]
-
-              # Decode URL in case of special characters
-              decoded_file = urllib.parse.unquote(file_name)
-
-              # Ignore directories (anything that ends with /)
-              if not decoded_file.endswith("/"):
-                  files.append(decoded_file)
-
-          print("Files found at core/qa/:")
-          for f in files:
-              print(f)
-
-      else:
-          print("Error:", response.status_code)
-
-      self.pause("asdf")
-
-      '''
-      url = "http://pri.tcplusondemand.com.s3.amazonaws.com/core/qa"
-
-      headers = {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-      }
-
-      response = requests.get(url, headers=headers)
-
-      if response.status_code == 200:
-          print("Success:", response.content)
-          html_content = response.text
-          print(html_content)
-      else:
-          print("Error:", response.status_code, response.text)
-      self.soft_exit()
-      '''
-      # gave up on this...
-      '''
-      my_resolver = dns.resolver.Resolver()
-      my_resolver.nameservers = ['192.168.1.23', '8.8.8.8']
-      dns.resolver.override_system_resolver(my_resolver)
-
-      try:
-        answer = my_resolver.resolve("pri.tcplusondemand.com.s3.amazonaws.com/core/qa/tcp.core-7.1.57.162.zip")  # Replace with your actual domain
-        #answer = my_resolver.resolve("http://pri.tcplusondemand.com.s3-website-us-east-1.amazonaws.com/core/qa/")  # Replace with your actual domain
-        print("Resolved IPs:", [ip.address for ip in answer])
-      except Exception as e:
-        print("DNS resolution failed:", e)
-      self.soft_exit()
-      '''
-
-    #filepath = "C:/Program Files (x86)/TimeClock Plus 7.0/7.1.57.145/cfg/config.pwh.yaml"
-    #self.yaml_to_list(filepath)
-    #self.soft_exit()
 
     self.show_first_run_notice()
     # start main loop
@@ -804,7 +733,7 @@ class spin_up():
           os.system("start explorer.exe %s"%path_action_version_action)
           time.sleep(3)
 
-        case "Reset (enter)":
+        case "Reset/refresh utility (enter)":
           str_action_description = "resetting application: "
 
         case "Exit":
@@ -929,7 +858,7 @@ class spin_up():
 
                   # get string value of choice
                   if int_action_choice == 0:
-                    str_action_choice = "Reset (enter)"
+                    str_action_choice = "Reset/refresh utility (enter)"
                   else:
                     str_action_choice_temp = self.list_str_log_folders[int_action_choice - 1]
                   print(str_action_choice)
@@ -939,7 +868,6 @@ class spin_up():
                     path_action_version_action = path_action_version_folder + self.path_app_log
               str_action_description = "Open log file"
             case default:
-              None
               break
 
           # confirm action
@@ -971,7 +899,6 @@ class spin_up():
           os.system("start cmd /c %s"%path_action_version_action)
 
 
-      # confirm action
 
 
   #  move window -----------------------------------------------------------------
