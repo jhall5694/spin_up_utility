@@ -5,13 +5,17 @@
 - This utility provides multiple features for working with local TCP instances
 
 ## Usage
-* To use this utility, open the "dist" folder to download and run "spin_up_utility.exe"  
-  - Alternatively, the utility can be run from a cmd window as Administrator
-    - download the latest version of Python at "https://www.python.org/downloads/"  
-    - download the entire github project  
-    - open a cmd window as admin  
-    - navigate to the downloaded directory, e.g., ->> cd "path/to/the/downloaded/directory"  
-    - run spin_up_utility main.py file via command "python main.py"
+* To use this utility (multiple options):
+  1. Download and extract the latest release
+  2. Download and run the executable
+  3. Download and unzip the latest release
+      - Run the executable
+  4. Download entire project and run python file from a cmd prompt as Administrator
+      - download the latest version of Python at "https://www.python.org/downloads/"  
+      - download the entire github project  
+      - open a cmd prompt as admin  
+      - navigate to the downloaded directory, e.g., ->> cd "path/to/the/downloaded/directory"  
+      - run spin_up_utility main.py file via command "python main.py"
 
  
 ## Prerequisites
