@@ -1,5 +1,8 @@
 # spin_up_utility  
 ### *developed by Jason Hall 2/12/2025*
+   
+## Description
+- This utility provides multiple features for working with local TCP instances
 
 ## Usage
 * To use this utility, open the "dist" folder to download and run "spin_up_utility.exe"  
@@ -9,9 +12,7 @@
     - open a cmd window as admin  
     - navigate to the downloaded directory, e.g., ->> cd "path/to/the/downloaded/directory"  
     - run spin_up_utility main.py file via command "python main.py"
-   
-## Description
-- This utility provides multiple features for working with local TCP instances
+
  
 ## Prerequisites
 - This utility requires that the TCP folder be located at: C:/Program Files (x86)/TimeClock Plus 7.0/  
