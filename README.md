@@ -1,6 +1,7 @@
-spin_up_utility  
-developed by Jason Hall 2/12/2025  
+#spin_up_utility  
+##developed by Jason Hall 2/12/2025  
 
+##Usage
 *To use this utility, open the "dist" folder to download and run "spin_up_utility.exe"  
 **Alternatively, the utility can be run from a cmd window as Administrator  
 ***download the latest version of Python at "https://www.python.org/downloads/"  
@@ -13,7 +14,7 @@ developed by Jason Hall 2/12/2025
 *The utility can be exited at any time by pressing ctrl+c  
 *The utility should always be run as administrator  
 
-Changes:  
+##Changes:  
 1.0  
 * Initial base functionality  
 
