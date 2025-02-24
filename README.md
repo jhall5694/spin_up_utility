@@ -25,6 +25,17 @@
 ## Notes
 - The utility can be exited at any time by pressing ctrl+c  
 
+## TODO
+- Add ability to stop specific TCP services
+- Clean up code
+  - A lot of the code is duplicated that could be rewritten to utilize common methods
+- List pri repository files
+  - After thorough testing it seems the only way to make this possible would be to get with the AWS S3 admin and request "directory listing" permissions
+- Modify specific yaml file options/keys
+  - Python has a great class for dealing with yaml files
+  - Started exploratory testing in this feature that was promising
+- Add GUI functionality
+
 ## Changelog:  
 1.0  
 * Initial base functionality  
