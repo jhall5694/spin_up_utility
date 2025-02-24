@@ -26,6 +26,7 @@
 - The utility can be exited at any time by pressing ctrl+c  
 
 ## TODO
+- Auto refresh option
 - Add ability to stop specific TCP services
 - Clean up code
   - A lot of the code is duplicated that could be rewritten to utilize common methods
